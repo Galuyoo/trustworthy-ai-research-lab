@@ -1,28 +1,43 @@
-# Ten-minute presenter guide
+# Presenter walkthroughs
 
-## Before the talk
+## Before either demonstration
 
-Open the live app early to wake it if the cloud host has put it to sleep. Keep a local copy running on your laptop and save the supplied screenshots locally. Rehearse at the projector's screen size. Both experiments work without internet once Python and requirements are installed.
+Open the app early to wake the hosting service. Use **Presentation mode** and click **Start over**: the system introduction opens, Comfortable is restored, the night view is at 35%, and both evidence examples reset. Your presentation and motion preferences stay unchanged. Every section is available from the three tabs. Moving between them preserves the experiment inputs.
 
-## 0:00–5:00 — Can You Save the Light?
+Rehearse at the actual projector resolution. At 1280 × 720 the core energy controls, night visual and budget fit on screen; the transition and deeper charts require a short scroll. On mobile the controls stack. Use the arrow keys on a focused slider for precise adjustments. The main interactions work with motion disabled and with an operating-system reduced-motion preference.
 
-1. Start **Comfortable**. Ask: “Can this light last twelve hours?” Point out the required floor and optional target.
-2. Click **Close call**. Minimum needs 192 Wh; usable after reserve is 198 Wh, so only 6 Wh remain above the floor.
-3. Increase **reserve from 10% to 15%**. Now usable energy is 187 Wh: 5 Wh short. Ask why a more conservative plan can refuse service that nominal energy could support.
-4. Click **Impossible**. Remove the reserve. Even then, 120 Wh cannot meet the 192 Wh minimum requirement. The lamp switches off rather than silently violating the brightness floor.
-5. Say: “Prediction accuracy cannot create energy.” Click **Reset light**.
+The introductory signal makes only two gentle passes. It illustrates data moving toward a forecast, not live infrastructure or physical actuation. There is no automatic playback to manage: move the night scrubber deliberately.
 
-## 5:00–10:00 — Catch the Data Leakage
+## BCU · 10 minutes
 
-1. Open the second tab. At 20:00 the observation happens, 20:10 the forecast is issued, and 20:20 the observation arrives.
-2. Ask: “Could the model have used this?” Toggle **Reveal the verdict**.
-3. Move **Actual receipt time to 20:10**. Equality passes under this toy's explicitly inclusive rule. Move it after cutoff again.
-4. Toggle **Use the later reconstructed input**. The input changes; the rule and outcome do not. Apparent error changes from 13 to 1 percentage point. This is a synthetic example, not an authentic audit row.
-5. Scroll to the purple research panel. Explain **62 + 4 = 66**, while **184 − 126 = 58**. Mention the limited three-night A2 subset and avoid generalising these findings.
-6. Finish: “Trust the decision—and check what the system actually knew.” Show the public source and paper links.
+| Time | Action | Question or takeaway |
+| --- | --- | --- |
+| 0:00–1:00 | Start at **The system**. Select Sensors, Telemetry, Forecast, Proposed plan in the workflow. | “A streetlight must serve a night. We need both a feasible decision and evidence the system really had.” Explain that this is a conceptual, synthetic teaching app. |
+| 1:00–2:00 | **Begin the night**. Keep Comfortable. Move the night scrubber toward dawn. | “Can this light serve all twelve hours?” The lamp delivers 80%; 384 Wh is consumed and 96 Wh remains at dawn, including the 48 Wh reserve. The lamp turns off at dawn because service is complete. |
+| 2:00–3:30 | Choose **Close call**, then increase reserve from **10% to 15%**. | Minimum needs 192 Wh. The usable budget falls from 198 to 187 Wh: margin +6 becomes −5 Wh. Nominal energy could cover the minimum, but this chosen reserve cannot. The red interval is unmet service. |
+| 3:30–4:30 | Choose **Impossible**, remove reserve, then move the scrubber late into the night. Optionally open the full-night charts. | 120 Wh cannot meet a 192 Wh requirement, even with no reserve. At the 40% floor it serves 7.5 of 12 hours, leaving 4.5 unserved. “Prediction accuracy cannot create energy.” |
+| 4:30–5:00 | Read the bridge and click **Follow the measurement**. | “We’ve assumed we know the battery state. But what if that measurement arrived too late?” |
+| 5:00–6:30 | Keep 20:00 observation, 20:10 issue, 20:20 receipt. Ask before toggling **Reveal the verdict**. | Observation time passes; receipt time fails. Earlier observation does not establish earlier availability. |
+| 6:30–7:30 | Click **Receive at cutoff**, then move receipt one minute later. | Equality passes under this toy’s inclusive rule. After cutoff, the receipt verdict changes. Real systems also need explicit ingestion/order semantics. |
+| 7:30–8:30 | Expand the second trap. Toggle **Use the later reconstructed input**. | Frozen 70% input → 60% prediction; later 58% input → 48% prediction; fixed invented outcome 47%. The error changes 13 → 1 pp because the input changed. This is not a model improvement, and reconstruction need not improve accuracy. |
+| 8:30–9:30 | Expand **Actual research · fixed historical audit results**. | Distinguish the fixed authentic counts from the toys. A1: 62 + 4 = 66 changed decisions; 184 − 126 = 58 is only the difference in totals. A2: 345/348 predictions differed in a limited three-night retrospective subset. Do not generalise those rates. |
+| 9:30–10:00 | Return to the plan or finish on the integrity lesson. | “Trust the decision. Preserve what the system knew.” Acknowledge Nouh Elmitwally and Faisal Saeed; the footer links the published SETA paper and public research code. |
 
-## Internet failure fallback
+## Agamine technical discussion · 5 minutes
 
-- Best: run `python -m streamlit run streamlit_app.py` locally after installing `requirements.txt` in advance. Rehearse with Wi-Fi off. App calculations and charts require no external services; links do.
-- If Python cannot run: show the supplied screenshots and narrate the exact preset values above. Do not call screenshots interactive or claim a live app connection.
-- If time is short: show Close call at 10%/15% reserve, then the default late-arrival example. Skip reconstruction and explain the fixed audit scope briefly.
+| Time | Action | Technical focus |
+| --- | --- | --- |
+| 0:00–0:40 | Introduce the five-stage workflow. | Separate sensing, telemetry receipt, forecast issuance, proposed decisions and actual actuation. This public app has no operational connection or company endorsement. |
+| 0:40–2:00 | Close call, 10% → 15% reserve; Impossible, reserve → 0%. | Distinguish physical feasibility from feasibility under a planning reserve. Expose the minimum service, energy shortfall and unserved interval rather than hiding a violation in a dimming value. |
+| 2:00–3:00 | Follow the measurement; reveal the original timeline and test equality. | Define point-in-time eligibility, receipt latency and ordering at cutoff. A historical timestamp does not prove operational availability. |
+| 3:00–4:00 | Show frozen versus reconstructed inputs. | Freeze issued features and predictions. Keep later reconstruction separately identifiable; changed inputs can change both predictions and scores. |
+| 4:00–5:00 | Open the fixed research panel and state its scope. | A1 has non-nested sets; A2 covers only three retrospective nights. Discuss what evidence a prospective deployment must preserve. Do not infer whole-fleet reliability or operational performance from these counts. |
+
+## Recovery and offline backup
+
+- **Reset light** changes only the energy experiment, including its scrubber.
+- **Reset evidence** restores the original timeline and both evidence toggles; it keeps the lighting inputs.
+- **Start over** resets both experiments and returns to the introduction without changing presentation/motion preferences.
+- If short on time, show Close call 10%/15% and the default late-arrival verdict. Skip the deeper panels.
+- Install `requirements.txt` in advance and run `python -m streamlit run streamlit_app.py` locally. Once installed, the interactive app needs no network services; public links require internet.
+- Keep the supplied actual screenshots as a fallback. Describe them as saved views, not a live simulation.
