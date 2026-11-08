@@ -2,17 +2,18 @@
 import altair as alt
 from lab_models import EnergyPlan, clock
 
-TEAL = "#087f8c"
-RED = "#c23d49"
-GOLD = "#b46b0c"
-NAVY = "#183247"
+TEAL = "#67e4cf"
+RED = "#ff8d98"
+GOLD = "#ffd18a"
+NAVY = "#a8bdca"
 
 
 def style(chart):
     return (chart.configure_view(strokeWidth=0)
-            .configure_axis(labelFontSize=13, titleFontSize=13, gridColor="#e7e9e8",
-                            titleColor=NAVY, labelColor=NAVY)
-            .configure_legend(labelFontSize=12, title=None, orient="bottom"))
+            .configure_axis(labelFontSize=13, titleFontSize=13, gridColor="#294455",
+                            titleColor=NAVY, labelColor=NAVY, domainColor="#294455", tickColor="#294455")
+            .configure_legend(labelFontSize=12, labelColor=NAVY, title=None, orient="bottom")
+            .configure(background="transparent"))
 
 
 def energy_charts(plan: EnergyPlan):
@@ -33,7 +34,7 @@ def energy_charts(plan: EnergyPlan):
         {"value": plan.scenario.minimum_pct, "label": "Required minimum"},
         {"value": plan.desired_pct, "label": "Desired target"},
     ])).mark_rule(strokeDash=[6, 5]).encode(
-        y="value:Q", color=alt.Color("label:N", scale=alt.Scale(
+        y="value:Q", color=alt.Color("label:N", title=None, legend=alt.Legend(orient="bottom"), scale=alt.Scale(
             domain=["Required minimum", "Desired target"], range=[RED, GOLD])),
         tooltip=["label:N", alt.Tooltip("value:Q", title="Brightness (%)")])
     layers = [actual, line, refs]
@@ -41,7 +42,7 @@ def energy_charts(plan: EnergyPlan):
         gap = alt.Chart(alt.Data(values=[{"start": plan.service_h, "end": h}])).mark_rect(
             color=RED, opacity=0.13).encode(x="start:Q", x2="end:Q")
         layers.insert(0, gap)
-    top = alt.layer(*layers).properties(height=170,
+    top = alt.layer(*layers).properties(height=195,
         description="Synthetic brightness plan. Dashed lines show minimum and desired brightness. Red shading is unmet service.")
     points = sorted(set([0.0, h, plan.service_h] + [h * i / 48 for i in range(49)]))
     battery = alt.Chart(alt.Data(values=[{"hour": t, "energy": plan.remaining_at(t)} for t in points]))
@@ -51,7 +52,7 @@ def energy_charts(plan: EnergyPlan):
         tooltip=[alt.Tooltip("hour:Q", format=".2f", title="Hour"), alt.Tooltip("energy:Q", format=".1f", title="Remaining (Wh)")])
     reserve = alt.Chart(alt.Data(values=[{"reserve": plan.reserve_wh, "label": "Held reserve"}])).mark_rule(
         color=GOLD, strokeDash=[6, 5]).encode(y="reserve:Q", tooltip=["label:N", alt.Tooltip("reserve:Q", title="Wh")])
-    bottom = (area + trace + reserve).properties(height=170,
+    bottom = (area + trace + reserve).properties(height=195,
         description="Synthetic remaining battery energy. The dashed amber line is the unspent planning reserve.")
     return style(top), style(bottom)
 
@@ -70,11 +71,11 @@ def event_timeline(observation: int, cutoff: int, receipt: int):
         y=alt.Y("event:N", sort=order, title=None, axis=alt.Axis(labelLimit=150)),
         color=alt.Color("event:N", sort=order, scale=alt.Scale(domain=order, range=[TEAL, NAVY, GOLD]), legend=None))
     cutoff_line = alt.Chart(alt.Data(values=[{"minute": cutoff}])).mark_rule(
-        color=NAVY, strokeDash=[5, 4], opacity=0.55).encode(
+        color=NAVY, strokeDash=[5, 4], opacity=0.9).encode(
             x=alt.X("minute:Q", scale=alt.Scale(domain=[1195, 1265], zero=False, nice=False)))
     markers = base.mark_point(filled=True, size=220).encode(
         shape=alt.Shape("event:N", scale=alt.Scale(domain=order, range=["circle", "diamond", "square"]), legend=None),
         tooltip=["event:N", "time:N"])
-    labels = base.mark_text(dy=-23, fontSize=16, fontWeight="bold").encode(text="time:N")
-    return style((cutoff_line + markers + labels).properties(height=215,
+    labels = base.mark_text(dy=-23, fontSize=18, fontWeight="bold").encode(text="time:N")
+    return style((cutoff_line + markers + labels).properties(height=175,
         description="Synthetic observation, forecast cutoff and receipt times, shown on separate rows to keep coincident timestamps legible."))
