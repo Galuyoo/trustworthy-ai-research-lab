@@ -1,4 +1,7 @@
 """Small native Altair charts, with explicit units and accessible descriptions."""
+# Wait for pandas to finish importing before Altair inspects it during chart validation.
+# Streamlit may be importing pandas on another thread during a cold start.
+import pandas  # noqa: F401
 import altair as alt
 from lab_models import EnergyPlan, clock
 

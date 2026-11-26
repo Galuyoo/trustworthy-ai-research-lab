@@ -1,4 +1,4 @@
-"""Trustworthy AI Lab — a ten-minute, synthetic, offline-capable teaching app."""
+"""Trustworthy AI Lab — a synthetic, offline-capable teaching app."""
 from datetime import time, timedelta
 from base64 import b64encode
 import streamlit as st
@@ -51,7 +51,7 @@ if "observation" not in st.session_state:
 st.html("""<div class="hero"><div class="eyebrow">Birmingham City University · 30 November 2026 · Interactive research</div>
 <h1>Trustworthy AI Lab<span style="color:#087f8c">.</span></h1>
 <p><strong>From Engineering to Trustworthy AI: What Real Systems Taught Me</strong></p>
-<p class="muted">Salaheddine Chouikh &nbsp;·&nbsp; Two experiments. Ten minutes. Test the decision—and the evidence behind it.</p></div>""")
+<p class="muted">Salaheddine Chouikh &nbsp;·&nbsp; Two experiments for the BCU guest lecture</p></div>""")
 from pathlib import Path
 source_file = Path(__file__).parent / "SOURCE_URL.txt"
 links = "[GitHub ↗](https://github.com/Galuyoo) &nbsp; · &nbsp; " \
@@ -59,7 +59,6 @@ links = "[GitHub ↗](https://github.com/Galuyoo) &nbsp; · &nbsp; " \
         "[Research code ↗](https://github.com/Galuyoo/offgrid-streetlight-dimming-control)"
 if source_file.exists():
     links += f" &nbsp; · &nbsp; [Demo source ↗]({source_file.read_text().strip()})"
-st.markdown(links, unsafe_allow_html=True)
 st.caption("Explore an energy constraint, then discover how late data can change an evaluation. All interactive examples are synthetic.")
 
 energy_tab, evidence_tab = st.tabs(["01 · Can You Save the Light?", "02 · Catch the Data Leakage"], key="experiment")
@@ -181,7 +180,7 @@ with evidence_tab:
     st.html('<div class="takeaway"><strong>The lesson:</strong> Happening earlier does not mean being available earlier. '
             'A forecast must be evaluated using evidence available at its issue time.</div>')
 
-    with st.expander("A second trap · can later history rewrite a score?", expanded=True):
+    with st.expander("Optional · how later data can change an error score"):
         st.caption("ANOTHER SYNTHETIC EXAMPLE · invented input values, forecast and outcome")
         st.toggle("Use the later reconstructed input", key="later")
         toy = reconstruction_example(st.session_state.later)
@@ -196,40 +195,43 @@ with evidence_tab:
                    "This is a different retrospective forecast—not a correction to what the model originally issued. "
                    "Reconstruction need not improve a score; this example was chosen to expose that possibility.")
 
-    st.html('<div class="research-box"><span class="badge research">Actual research · fixed historical audit aggregates</span></div>')
-    st.subheader("What changed in the audited subsets?")
-    st.caption("These counts stay fixed when you change the synthetic controls. Second research investigation: publication or acceptance is not asserted.")
-    with st.container(border=True):
-        st.markdown("**A1 · Timestamp eligibility**")
-        r = st.columns(3)
-        r[0].metric("Resource-status eligible", f"{AUDIT['resource_eligible']}/{AUDIT['a1_total']}")
-        r[1].metric("Receipt-time eligible", f"{AUDIT['receipt_eligible']}/{AUDIT['a1_total']}")
-        r[2].metric("Individual decisions changed", str(AUDIT["changed"]))
-        st.markdown("**62 resource-only + 4 receipt-only = 66 changed decisions.** "
-                    "The sets are not nested: 184 − 126 = 58 is the difference between totals, not the number of changes.")
-        st.caption("122 eligible under both rules · 594 under neither (derived from the supplied counts). "
-                   "782 paired forecasts · 13 nights · 11 poles · parser-usable subset.")
-        st.divider()
-        st.markdown("**A2 · Mutable reconstruction**")
-        r = st.columns(3)
-        r[0].metric("Forecasts audited", str(AUDIT["a2_forecasts"]))
-        r[1].metric("Predictions that differed", f"{AUDIT['a2_changed']}/{AUDIT['a2_comparisons']}")
-        r[2].metric("Nights in this subset", str(AUDIT["a2_nights"]))
-        st.caption("348 model comparisons across 87 forecasts. A changed prediction is not automatically a better prediction.")
-    st.warning("Scope matters: these findings describe particular audited research subsets from one deployment. "
-               "They are not rates that generalise to all AI, all industrial sites or the whole fleet. "
-               "A1 is parser-conditioned; A2 is a limited retrospective subset covering only three nights.")
+    with st.expander("Optional · findings from the historical audits"):
+        st.html('<div class="research-box"><span class="badge research">Actual research · fixed historical audit aggregates</span></div>')
+        st.subheader("What changed in the audited subsets?")
+        st.caption("These counts stay fixed when you change the synthetic controls. Second research investigation: publication or acceptance is not asserted.")
+        with st.container(border=True):
+            st.markdown("**A1 · Timestamp eligibility**")
+            r = st.columns(3)
+            r[0].metric("Resource-status eligible", f"{AUDIT['resource_eligible']}/{AUDIT['a1_total']}")
+            r[1].metric("Receipt-time eligible", f"{AUDIT['receipt_eligible']}/{AUDIT['a1_total']}")
+            r[2].metric("Individual decisions changed", str(AUDIT["changed"]))
+            st.markdown("**62 resource-only + 4 receipt-only = 66 changed decisions.** "
+                        "The sets are not nested: 184 − 126 = 58 is the difference between totals, not the number of changes.")
+            st.caption("122 eligible under both rules · 594 under neither (derived from the supplied counts). "
+                       "782 paired forecasts · 13 nights · 11 poles · parser-usable subset.")
+            st.divider()
+            st.markdown("**A2 · Mutable reconstruction**")
+            r = st.columns(3)
+            r[0].metric("Forecasts audited", str(AUDIT["a2_forecasts"]))
+            r[1].metric("Predictions that differed", f"{AUDIT['a2_changed']}/{AUDIT['a2_comparisons']}")
+            r[2].metric("Nights in this subset", str(AUDIT["a2_nights"]))
+            st.caption("348 model comparisons across 87 forecasts. A changed prediction is not automatically a better prediction.")
+        st.warning("Scope matters: these findings describe particular audited research subsets from one deployment. "
+                   "They are not rates that generalise to all AI, all industrial sites or the whole fleet. "
+                   "A1 is parser-conditioned; A2 is a limited retrospective subset covering only three nights.")
+
 
 st.divider()
+st.markdown(links, unsafe_allow_html=True)
 st.caption("SETA research by Salaheddine Chouikh, Nouh Elmitwally and Faisal Saeed. "
            "Independent educational application · synthetic exercises · no live infrastructure connection.")
 with st.expander("Presenter quick guide & offline backup"):
-    st.markdown("**Minutes 0–5:** Start Comfortable. Ask if the light will last. Choose Close call; "
+    st.markdown("**Energy budget:** Start Comfortable. Ask if the light will last. Choose Close call; "
                 "raise reserve from 10% to 15%. Choose Impossible and try removing the reserve. "
                 "Show that the minimum itself needs more energy. Reset.\n\n"
-                "**Minutes 5–10:** Open Catch the Data Leakage. Ask the audience before revealing the "
+                "**Data leakage:** Open Catch the Data Leakage. Ask the audience before revealing the "
                 "20:00 / 20:10 / 20:20 verdict. Move receipt to 20:10; equality passes. "
-                "Toggle the reconstructed input, then show the separate fixed research panel.\n\n"
+                "Open the optional reconstruction example if time allows.\n\n"
                 "**Offline:** Install the requirements and launch this app on your laptop before the event. "
                 "Once running locally, both experiments work without internet. Keep the supplied screenshots "
                 "open as a second fallback; external paper and GitHub links require connectivity.")
