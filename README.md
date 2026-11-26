@@ -8,7 +8,7 @@ A lightweight Streamlit teaching app. No sign-in in the app, database, external 
 
 Open the [public Trustworthy AI Lab](https://trustworthy-ai-lab.streamlit.app/) or run it locally below. The navigation renders only the selected demonstration.
 
-- **DIME Autonomy Simulator.** Compare four simulated solar-streetlight lighting strategies under Mixed, Cloudy and Sunny recharge. The unchanged standalone file in `assets/` runs locally in the browser. Its assumed state-of-charge values are illustrative and do not represent field performance or physical control.
+- **DIME Autonomy Simulator.** Compare four simulated solar-streetlight lighting strategies under Mixed, Cloudy and Sunny recharge. Choose **Run nights** to follow Observe, Predict, Decide, Night and Day. Pause and use **Next stage** to step through it, or let it run automatically. The standalone file in `assets/` runs locally in the browser. Its assumed state-of-charge values are illustrative and do not represent field performance or physical control.
 - **Can You Save the Light?** Adjust energy, night length, the lighting floor and a planning reserve. See the brightness plan, remaining energy, and explicit unmet service. Try Comfortable, Close call and Impossible.
 - **Catch the Data Leakage.** Move observation, forecast and receipt times, then reveal eligibility. Compare an invented frozen input with a later reconstruction, separately from fixed historical audit aggregates.
 
@@ -29,6 +29,7 @@ Open the local URL printed by Streamlit. Install the dependencies before travell
 ```bash
 python -m pip install -r requirements-dev.txt
 python -m pytest -q
+node --test tests/test_dime_rolling.mjs
 ```
 
 Tests cover exact preset outcomes, an energy-conservation grid, feasibility boundaries, inclusive timestamp rules, immutable research counts, and Streamlit widget interactions and resets.

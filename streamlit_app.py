@@ -239,7 +239,7 @@ st.markdown(links, unsafe_allow_html=True)
 st.caption("SETA research by Salaheddine Chouikh, Nouh Elmitwally and Faisal Saeed. "
            "Independent educational application · synthetic exercises · no live infrastructure connection.")
 with st.expander("Presenter quick guide & offline backup"):
-    st.markdown("**DIME:** Use Projector view. Compare Mixed, Cloudy and Sunny, "
+    st.markdown("**DIME:** Open Projector view and Run nights on Mixed. Pause and use Next stage to discuss the candidate, adaptive forecast and simulated outcome. Compare Cloudy or Sunny, "
                 "then choose Reset example.\n\n"
                 "**Energy budget:** Start Comfortable. Ask if the light will last. Choose Close call; "
                 "raise reserve from 10% to 15%. Choose Impossible and try removing the reserve. "
