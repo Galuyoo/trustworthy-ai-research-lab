@@ -1,6 +1,7 @@
 """Trustworthy AI Lab — a synthetic, offline-capable teaching app."""
 from datetime import time, timedelta
 from base64 import b64encode
+from pathlib import Path
 import streamlit as st
 from lab_models import AUDIT, PRESETS, Scenario, clock, eligible, plan_energy, reconstruction_example
 from lab_charts import energy_charts, event_timeline
@@ -26,9 +27,9 @@ h1,h2,h3 {letter-spacing:-0.035em;} h1 {font-size:clamp(2.2rem,4vw,3.4rem)!impor
 .verdict strong {font-size:1.6rem;display:block;} .verdict p {margin:0;font-size:.88rem;}
 .takeaway {border-left:4px solid #087f8c;padding:10px 16px;background:#edf3f1;font-size:1.05rem;line-height:1.5;margin:14px 0;}
 .research-box {border-top:3px solid #7e69a6;padding-top:16px;margin-top:20px;}
-[data-testid="stMetricValue"] {font-size:1.7rem;} [data-baseweb="tab"] {font-size:1rem;font-weight:650;}
+[data-testid="stMetricValue"] {font-size:1.7rem;}
 [data-testid="stSlider"] {padding-bottom:6px;} a {text-underline-offset:3px;}
-@media(max-width:640px){.block-container{padding:1rem 1rem 2rem;}.hero{padding:16px 0}.lamp-scene strong{font-size:1.45rem;}[data-baseweb="tab"]{font-size:.84rem;}h2{font-size:1.65rem!important;}}
+@media(max-width:640px){.block-container{padding:1rem 1rem 2rem;}.hero{padding:16px 0}.lamp-scene strong{font-size:1.45rem;}h2{font-size:1.65rem!important;}}
 </style>""")
 
 
@@ -51,19 +52,31 @@ if "observation" not in st.session_state:
 st.html("""<div class="hero"><div class="eyebrow">Birmingham City University · 30 November 2026 · Interactive research</div>
 <h1>Trustworthy AI Lab<span style="color:#087f8c">.</span></h1>
 <p><strong>From Engineering to Trustworthy AI: What Real Systems Taught Me</strong></p>
-<p class="muted">Salaheddine Chouikh &nbsp;·&nbsp; Two experiments for the BCU guest lecture</p></div>""")
-from pathlib import Path
-source_file = Path(__file__).parent / "SOURCE_URL.txt"
+<p class="muted">Salaheddine Chouikh &nbsp;·&nbsp; Three demonstrations for the BCU guest lecture</p></div>""")
+app_dir = Path(__file__).resolve().parent
+source_file = app_dir / "SOURCE_URL.txt"
 links = "[GitHub ↗](https://github.com/Galuyoo) &nbsp; · &nbsp; " \
         "[Published SETA paper ↗](https://doi.org/10.1016/j.seta.2026.105315) &nbsp; · &nbsp; " \
         "[Research code ↗](https://github.com/Galuyoo/offgrid-streetlight-dimming-control)"
 if source_file.exists():
     links += f" &nbsp; · &nbsp; [Demo source ↗]({source_file.read_text().strip()})"
-st.caption("Explore an energy constraint, then discover how late data can change an evaluation. All interactive examples are synthetic.")
+st.caption("Compare streetlight strategies, test a battery energy limit, then check "
+           "when a forecast could use a reading. All interactive examples are synthetic.")
 
-energy_tab, evidence_tab = st.tabs(["01 · Can You Save the Light?", "02 · Catch the Data Leakage"], key="experiment")
+DIME, ENERGY, EVIDENCE = (
+    "DIME Autonomy Simulator",
+    "Can You Save the Light?",
+    "Catch the Data Leakage",
+)
+active = st.segmented_control("Choose a demonstration", (DIME, ENERGY, EVIDENCE),
+                              default=DIME, required=True, wrap=True,
+                              key="experiment", label_visibility="collapsed")
 
-with energy_tab:
+if active == DIME:
+    st.iframe(app_dir / "assets" / "DIME_Autonomy_Lecture.html",
+              alt="Interactive solar streetlight battery and lighting simulator")
+
+elif active == ENERGY:
     st.html('<span class="badge">Synthetic educational simulation</span>')
     st.subheader("Can you keep this light on until dawn?")
     st.write("Start with a scenario. Then change the energy or reserve and watch the night change.")
@@ -74,12 +87,12 @@ with energy_tab:
 
     controls, visual = st.columns([1, 1.8], gap="large")
     with controls:
-        st.slider("Available battery energy (Wh)", 0, 600, step=5, key="energy")
-        st.slider("Night duration (hours)", 4, 16, key="night")
-        st.slider("Minimum required brightness (%)", 10, 100, step=5, key="minimum")
-        st.slider("Conservative planning reserve (%)", 0, 40, step=1, key="reserve",
+        st.slider("Available battery energy (Wh)", 0, 600, step=5, key="energy", persist_state="page")
+        st.slider("Night duration (hours)", 4, 16, key="night", persist_state="page")
+        st.slider("Minimum required brightness (%)", 10, 100, step=5, key="minimum", persist_state="page")
+        st.slider("Conservative planning reserve (%)", 0, 40, step=1, key="reserve", persist_state="page",
                   help="Hold back this share of starting energy. This is a planning choice, not a calibrated uncertainty probability.")
-        st.checkbox("Aim for 80% brightness if energy allows", key="extra")
+        st.checkbox("Aim for 80% brightness if energy allows", key="extra", persist_state="page")
         scenario = Scenario(st.session_state.energy, st.session_state.night,
                             st.session_state.minimum, st.session_state.reserve)
         plan = plan_energy(scenario, 80 if st.session_state.extra else scenario.minimum_pct)
@@ -139,7 +152,7 @@ with energy_tab:
                     "experimental horizons. These invented night lengths and energy values are not published "
                     "numerical results, a field-validated controller, or measured real-world energy savings.")
 
-with evidence_tab:
+elif active == EVIDENCE:
     st.html('<span class="badge">Synthetic timeline · no industrial observations</span>')
     st.subheader("Could the model have used this observation?")
     st.write("The sensor says it happened before the forecast. But when did the system receive it?")
@@ -147,7 +160,7 @@ with evidence_tab:
     for col, label, key in [(a, "Observation time", "observation"), (b, "Forecast issue / cutoff", "cutoff"),
                             (c, "Actual receipt time", "receipt")]:
         col.slider(label, min_value=time(20, 0), max_value=time(21, 0),
-                   step=timedelta(minutes=1), format="HH:mm", key=key)
+                   step=timedelta(minutes=1), format="HH:mm", key=key, persist_state="page")
     obs, cut, rec = [st.session_state[k].hour * 60 + st.session_state[k].minute
                      for k in ("observation", "cutoff", "receipt")]
     st.altair_chart(event_timeline(obs, cut, rec), width="stretch", theme=None)
@@ -157,7 +170,7 @@ with evidence_tab:
                    "The timestamp comparisons below still apply, but this is not a physically consistent event history. "
                    "A resource-status clock in a real system may have different semantics.")
     reveal, reset = st.columns([3, 1])
-    reveal.toggle("Reveal the verdict", key="reveal")
+    reveal.toggle("Reveal the verdict", key="reveal", persist_state="page")
     reset.button("↺ Reset evidence", on_click=reset_evidence, width="stretch", type="primary")
     if st.session_state.reveal:
         resource_ok, receipt_ok = eligible(obs, cut), eligible(rec, cut)
@@ -182,7 +195,7 @@ with evidence_tab:
 
     with st.expander("Optional · how later data can change an error score"):
         st.caption("ANOTHER SYNTHETIC EXAMPLE · invented input values, forecast and outcome")
-        st.toggle("Use the later reconstructed input", key="later")
+        st.toggle("Use the later reconstructed input", key="later", persist_state="page")
         toy = reconstruction_example(st.session_state.later)
         st.markdown(f"**{toy.label}** · The toy rule always predicts a 10 percentage-point SOC drop.")
         m = st.columns(3)
@@ -226,12 +239,14 @@ st.markdown(links, unsafe_allow_html=True)
 st.caption("SETA research by Salaheddine Chouikh, Nouh Elmitwally and Faisal Saeed. "
            "Independent educational application · synthetic exercises · no live infrastructure connection.")
 with st.expander("Presenter quick guide & offline backup"):
-    st.markdown("**Energy budget:** Start Comfortable. Ask if the light will last. Choose Close call; "
+    st.markdown("**DIME:** Use Projector view. Compare Mixed, Cloudy and Sunny, "
+                "then choose Reset example.\n\n"
+                "**Energy budget:** Start Comfortable. Ask if the light will last. Choose Close call; "
                 "raise reserve from 10% to 15%. Choose Impossible and try removing the reserve. "
                 "Show that the minimum itself needs more energy. Reset.\n\n"
                 "**Data leakage:** Open Catch the Data Leakage. Ask the audience before revealing the "
                 "20:00 / 20:10 / 20:20 verdict. Move receipt to 20:10; equality passes. "
                 "Open the optional reconstruction example if time allows.\n\n"
                 "**Offline:** Install the requirements and launch this app on your laptop before the event. "
-                "Once running locally, both experiments work without internet. Keep the supplied screenshots "
+                "Once running locally, all three demonstrations work without internet. Keep the supplied screenshots "
                 "open as a second fallback; external paper and GitHub links require connectivity.")

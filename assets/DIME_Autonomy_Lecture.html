@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DIME · Solar streetlight autonomy simulation</title>
+<style>
+:root{color-scheme:light;--ink:#102b39;--muted:#638090;--muted2:#86a0ab;--bg:#eef3f5;--white:#fff;--line:#dce6e9;--teal:#087c83;--tealbright:#1aa4a6;--amber:#c07a35;--slate:#66809a;--red:#bd4964;--night:#eef3f8;--day:#fff7e8;--shadow:0 11px 32px rgba(12,37,50,.075);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);min-width:320px}button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:3px solid #6cb7bb;outline-offset:2px}.topbar{background:#102b39;color:#f0f9fa;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;gap:15px;box-shadow:0 5px 20px #16334818}.brand{display:flex;align-items:center;gap:13px;min-width:0}.logo{width:39px;height:39px;border:1px solid #40858b;border-radius:12px;display:grid;place-items:center;background:#173e4b;color:#68dbd4;font-weight:900;font-size:20px}.brand h1{font-size:15px;margin:0;letter-spacing:.1em;font-weight:800}.brand p{margin:3px 0 0;color:#a9c4ca;font-size:11px;letter-spacing:.035em}.top-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:flex-end}.status{font-size:10px;color:#b3d1d0;letter-spacing:.07em;border:1px solid #3a6270;border-radius:99px;padding:7px 10px;white-space:nowrap}.button{background:#fff;color:#163e4b;border:1px solid #dae6e9;padding:9px 12px;border-radius:9px;font-weight:700;font-size:11px;transition:background .2s}.button:hover{background:#e5f6f5}.top-actions .button{background:#204757;color:#e1f8f8;border-color:#37616e}.top-actions .button:hover{background:#2e5b6a}.button.primary{background:#087c83;border-color:#087c83;color:white}.button.primary:hover{background:#08636a}.shell{display:grid;grid-template-columns:300px minmax(0,1fr);gap:20px;margin:23px auto 28px;width:min(1620px,calc(100% - 42px));align-items:start}.panel{background:#fff;border:1px solid #dfe8ea;border-radius:15px;box-shadow:var(--shadow)}.controls{position:sticky;top:20px;max-height:calc(100vh - 42px);overflow:auto;scrollbar-width:thin}.controls-header{padding:19px 19px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}.controls-header h2{font-size:14px;margin:0}.micro{font-size:10px;color:var(--muted);line-height:1.45}.controls-inner{padding:0 19px 18px}.control-section{padding:17px 0 14px;border-bottom:1px solid var(--line)}.control-section:last-child{border:none}.section-title{display:flex;align-items:center;justify-content:space-between;margin:0 0 13px}.section-title h3{margin:0;font-size:11px;letter-spacing:.075em;color:#35576a;text-transform:uppercase}.section-title span{font-size:10px;color:var(--muted)}.slider-field{margin:0 0 13px}.slider-field:last-child{margin-bottom:0}.slider-head{display:flex;align-items:center;justify-content:space-between;gap:5px;font-size:11px;color:#425c6b;margin-bottom:5px}.slider-head b{font-size:12px;color:#173746;font-variant-numeric:tabular-nums;white-space:nowrap}.slider-head .static-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}input[type=range]{width:100%;height:17px;margin:1px 0;accent-color:var(--teal)}.gain-row{display:grid;grid-template-columns:51px 1fr 42px;align-items:center;gap:7px;margin:11px 0}.gain-row label{font-size:11px;color:#456676;font-weight:700}.gain-row strong{font-variant-numeric:tabular-nums;font-size:11px;text-align:right}.gain-row input{min-width:0}.preset-row{display:flex;gap:5px;margin-bottom:12px}.preset{border:1px solid var(--line);background:#f8fbfb;border-radius:8px;color:#476775;padding:7px 9px;font-size:10px;font-weight:700;flex:1}.preset[data-active=true]{background:#e2f7f5;border-color:#58b3b2;color:#087c83}.control-note{border-radius:9px;background:#eff7f7;border:1px solid #d7e9e8;color:#4b7280;font-size:10px;line-height:1.55;padding:10px 11px;margin-top:12px}.linklike{color:#087c83;font-size:10px;font-weight:750;background:none;border:none;text-decoration:underline;text-underline-offset:2px;padding:0}.file-upload{display:none}.main{min-width:0}.hero{display:flex;align-items:start;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:5px 2px 16px}.eyebrow{font-size:10px;letter-spacing:.115em;font-weight:800;color:#087c83;margin:0 0 7px;text-transform:uppercase}.hero h2{font-size:clamp(21px,2.1vw,30px);font-weight:830;letter-spacing:-.032em;margin:0 0 7px;line-height:1.17}.hero p{font-size:12px;line-height:1.55;color:var(--muted);margin:0;max-width:810px}.hero .hero-badge{padding:8px 11px;border:1px solid #bfdadb;background:#e5f6f6;color:#107579;border-radius:9px;font-weight:800;font-size:10px;white-space:nowrap}.insight-banner{background:#143b48;color:#e9f8f9;border-radius:13px;padding:14px 19px;display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:14px}.insight-banner strong{font-size:15px;display:block;line-height:1.35}.insight-banner p{margin:4px 0 0;color:#b7d5d6;font-size:11px;line-height:1.48}.insight-tag{font-size:11px;padding:8px 11px;border-radius:8px;background:#245764;color:#c9f7f2;font-weight:780;white-space:nowrap}.graph-panel{padding:18px 19px 14px}.panel-top{display:flex;justify-content:space-between;align-items:start;gap:12px;flex-wrap:wrap}.panel-top h3{font-size:15px;margin:0 0 5px;letter-spacing:-.01em}.panel-top p{color:var(--muted);font-size:10px;line-height:1.45;margin:0}.legend{display:flex;gap:7px;flex-wrap:wrap;align-items:center}.legend-button{font-size:10px;display:flex;gap:7px;align-items:center;padding:7px 9px;border:1px solid var(--line);border-radius:7px;background:#fbfdfd;color:#405c6b;font-weight:740}.legend-button[aria-pressed=false]{opacity:.4}.legend-line{display:inline-block;width:17px;height:3px;border-radius:2px}.chart-wrap{margin-top:10px;width:100%;height:350px;position:relative}.chart-wrap svg{width:100%;height:100%;overflow:visible;touch-action:pan-y}.chart-tooltip{position:absolute;z-index:2;pointer-events:none;padding:9px 11px;border-radius:8px;background:rgba(16,43,57,.95);color:#f4f9fa;font-size:11px;line-height:1.5;white-space:pre-line;min-width:150px;max-width:230px;box-shadow:0 8px 24px #081d2470;display:none}.chart-tooltip b{color:#99e5dd}.chart-explain{font-size:10px;color:var(--muted);border-top:1px solid var(--line);padding-top:9px;margin-top:6px;display:flex;gap:15px;justify-content:space-between;flex-wrap:wrap}.trio{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin:14px 0}.scenario-card{background:#fff;border:1px solid #dfe7ea;border-top:4px solid var(--accent);border-radius:12px;padding:13px 14px;min-width:0;box-shadow:var(--shadow)}.scenario-card h4{margin:0 0 5px;color:#466474;font-size:11px}.scenario-card .number{font-size:23px;font-weight:850;letter-spacing:-.04em;line-height:1.15;font-variant-numeric:tabular-nums}.scenario-card .number span{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:0}.scenario-card p{font-size:10px;color:var(--muted);margin:7px 0 0;line-height:1.45}.scenario-card .danger{color:#b94760;font-weight:800}.scenario-card .good{color:#087c83;font-weight:800}.detail-panel{padding:17px 19px;margin-bottom:17px}.detail-top{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}.detail-panel h3{margin:0 0 4px;font-size:14px}.detail-panel p{font-size:10px;color:var(--muted);margin:0}.table-scroller{overflow:auto;max-width:100%;margin-top:13px}table{width:100%;border-collapse:collapse;font-size:11px;text-align:left;font-variant-numeric:tabular-nums}th{padding:10px 12px;background:#f3f7f8;text-transform:uppercase;letter-spacing:.055em;font-size:9px;color:#6c8592;white-space:nowrap}td{padding:10px 12px;border-bottom:1px solid #edf1f2;white-space:nowrap}td:last-child{white-space:normal}tbody tr:last-child td{border-bottom:none}tr.row-focus td{background:#e7f9f6}td b{color:var(--teal)}td .pill{font-size:9px;background:#edf7f7;color:#08747a;border-radius:100px;padding:4px 7px}.footnote{font-size:10px;color:#758d9b;line-height:1.55;padding:0 6px 8px}.footnote strong{color:#486878}.title-mini{font-size:10px;color:#e5f5f5;font-weight:800;letter-spacing:.05em}.fullscreen-tip{display:none}.details-actions{display:flex;gap:8px;align-items:center}.details-actions button{background:#f3f8f9;color:#476b76;font-size:10px;border:1px solid #d7e5e7;border-radius:7px;padding:7px 9px;font-weight:750}
+@media(max-width:1160px){.shell{grid-template-columns:268px minmax(0,1fr);gap:15px;width:calc(100% - 28px)}.topbar{padding:12px 15px}.trio{grid-template-columns:repeat(2,minmax(0,1fr))}.chart-wrap{height:350px}}
+@media(max-width:850px){.shell{grid-template-columns:1fr;width:calc(100% - 22px);margin-top:12px}.controls{position:static;max-height:none}.controls-inner{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 22px}.control-section{padding-right:5px}.hero h2{font-size:24px}.chart-wrap{height:330px}}
+@media(max-width:600px){.topbar{padding:11px}.brand h1{font-size:12px}.brand p{font-size:9px}.status{display:none}.controls-inner{grid-template-columns:1fr}.hero{padding-top:10px}.hero h2{font-size:23px}.insight-banner{flex-wrap:wrap}.chart-wrap{height:270px}.graph-panel{padding:14px 9px}.legend{gap:4px}.legend-button{font-size:9px;padding:6px}.trio{gap:7px}.scenario-card{padding:10px}.scenario-card .number{font-size:20px}.scenario-card h4{font-size:10px}.top-actions .button{font-size:10px;padding:8px 9px}}
+body.presentation .shell{grid-template-columns:1fr;width:min(1640px,calc(100% - 42px))}body.presentation .controls{display:none}body.presentation .chart-wrap{height:min(46vh,530px)}body.presentation .hero h2{font-size:32px}body.presentation .fullscreen-tip{display:inline}
+@media print{.topbar,.controls,.top-actions,.footnote,.details-actions{display:none!important}.shell{display:block;width:100%}.graph-panel{break-inside:avoid}.chart-wrap{height:400px}.trio{break-inside:avoid}body{background:#fff}}
+
+/* Prominent, directly editable next-dusk SOC target. This is a goal, not a field command. */
+.target-section{padding:16px 0 16px}
+.target-section .section-title{margin-bottom:10px}
+.target-section .section-title h3{color:#087c83}
+.target-box{padding:12px 13px 10px;border:1px solid #a9dcd9;border-radius:12px;background:#f0faf9}
+.target-edit{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.target-edit label{font-size:12px;line-height:1.4;font-weight:600;color:#254956;max-width:185px}
+.target-edit label strong{color:#076f78}
+.target-number-wrap{display:flex;align-items:center;border:1px solid #78bbb7;border-radius:9px;background:#fff;min-width:88px;padding-right:8px;color:#087c83;font-weight:750}
+.target-number-wrap input{width:61px;min-height:35px;border:0;background:transparent;text-align:right;padding:4px 5px;color:#096e76;font-size:21px;font-weight:800;font-variant-numeric:tabular-nums;outline-offset:2px}
+.target-number-wrap input:focus-visible{outline:2px solid #087c83;border-radius:6px}
+.target-number-wrap span{font-size:13px}
+.target-range{margin-top:12px!important;accent-color:#087c83!important}
+.target-scale{display:flex;align-items:center;justify-content:space-between;color:#63828e;font-size:10px;margin-top:2px}
+.target-scale b{color:#087c83;font-weight:850}
+.target-box p{font-size:10.5px;line-height:1.5;color:#54727d;margin:12px 0 0}
+@media(max-width:850px){.target-section{grid-column:1/-1}}
+
+.insight-banner{display:none}
+.lecture-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;background:#fff;border:1px solid #c8d9dd;border-left:5px solid #087c83;border-radius:10px;padding:10px 15px;margin:0 0 12px}
+.lecture-bar strong{font-size:16px}.lecture-bar p{margin:4px 0 0;color:#345364;font-size:14px}
+.lecture-weather{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.lecture-weather .preset-row{margin:0;display:flex}
+.lecture-weather .preset,.top-actions .button,.legend-button{font-size:14px;min-height:38px}
+.panel-top h3{font-size:20px}.panel-top p,.chart-explain,.scenario-card p{font-size:13px;color:#294c5d}
+.scenario-card h4{font-size:14px}.slider-head label,.section-title h3{font-size:14px}
+#chart text{font-size:13px;fill:#294c5d}
+body.presentation .chart-wrap{height:min(45vh,470px)}
+body.presentation .hero{padding-top:8px;padding-bottom:8px}
+body.presentation .topbar{padding-top:8px;padding-bottom:8px}
+@media (max-width:700px){#chart text{font-size:10px}.lecture-weather .preset,.top-actions .button,.legend-button{font-size:12px}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><div class="logo" aria-hidden="true">D</div><div><h1>DIME <span style="font-weight:500;color:#a7c3c9">/ AUTONOMY SIMULATION</span></h1></div></div>
+  <div class="top-actions"><button class="button" id="playBtn" title="Step through all nights of the illustrative comparison">▶ Run nights</button><button class="button" id="resetBtn" title="Restore mixed weather, the starting battery and all four curves">↺ Reset example</button><button class="button" id="csvBtn" title="Export scenario and per-night comparison">⇩ CSV</button><button class="button" id="presentBtn" title="Toggle larger stage view">▣ Projector view</button></div>
+</header>
+<div class="shell">
+ <aside class="panel controls" id="controls" aria-label="Interactive scenario parameters">
+  <div class="controls-header"><div><h2>Experiment controls</h2><div class="micro">Changes recalculate all 4 scenarios</div></div><span class="micro">1 simulated light</span></div>
+  <div class="controls-inner">
+   <section class="control-section target-section" aria-label="DIME SOC target control">
+    <div class="section-title"><h3>DIME night-start SOC target</h3><span>Adaptive only</span></div>
+    <div class="target-box">
+     <div class="target-edit"><label for="targetNumber">Aim for this SOC at the <strong>next night start</strong></label><div class="target-number-wrap"><input id="targetNumber" type="number" min="35" max="95" step="1" value="70" inputmode="numeric" aria-label="DIME target at next night start, percent" /><span>%</span></div></div>
+     <input id="target" class="target-range" type="range" min="35" max="95" step="1" data-bind="target" aria-label="DIME target next night-start SOC" />
+     <div class="target-scale"><span>35%</span><span><b id="targetValue">70%</b> target</span><span>95%</span></div>
+     
+    </div>
+   </section>
+   <section class="control-section">
+    <div class="section-title"><h3>Starting conditions</h3><span>Battery SOC</span></div>
+    <div class="slider-field"><div class="slider-head"><label for="initial">Initial night-start SOC</label><b id="initialValue"></b></div><input id="initial" type="range" min="20" max="100" step="1" data-bind="initial" /></div>
+    <div class="slider-field"><div class="slider-head"><label for="reserve">Protected reserve</label><b id="reserveValue"></b></div><input id="reserve" type="range" min="5" max="45" step="1" data-bind="reserve" /></div>
+    <div class="slider-field"><div class="slider-head"><label for="nights">Consecutive nights</label><b id="nightsValue"></b></div><input id="nights" type="range" min="3" max="7" step="1" data-bind="nights" /></div>
+   </section>
+   <section class="control-section">
+    <div class="section-title"><h3>Daylight recharge</h3><span>Varies every day</span></div>
+    <div id="gainInputs"></div>
+    <div class="control-note">These are <b>illustrative next-day battery gains</b> in percentage points (pp). The model uses them as both expected and realised gains. The forecast reduction control lets you plan for less. Actual weather-forecast skill is not being tested.</div>
+    <div style="margin-top:10px;display:flex;justify-content:space-between;gap:8px;align-items:center"><button type="button" class="linklike" id="importBtn">Use synthetic CSV of day gains</button><span class="micro" id="datasetTag">Synthetic mixed week</span></div>
+    <input type="file" id="csvInput" class="file-upload" accept=".csv,.txt,text/csv,text/plain" aria-label="Import day gain scenarios" />
+   </section>
+   <section class="control-section">
+    <div class="section-title"><h3>DIME adaptive plan</h3><span>Recalculated every night</span></div>
+    <div class="slider-field"><div class="slider-head"><label for="minLoss">Minimum service loss / night</label><b id="minLossValue"></b></div><input id="minLoss" type="range" min="2" max="25" step="1" data-bind="minLoss" /></div>
+    <div class="slider-field"><div class="slider-head"><label for="maxLoss">Maximum allowed loss / night</label><b id="maxLossValue"></b></div><input id="maxLoss" type="range" min="12" max="50" step="1" data-bind="maxLoss" /></div>
+    <div class="slider-field"><div class="slider-head"><label for="guard">Reserve safety buffer</label><b id="guardValue"></b></div><input id="guard" type="range" min="0" max="15" step="1" data-bind="guard" /></div>
+    <div class="slider-field"><div class="slider-head"><label for="haircut">Forecast recharge reduction</label><b id="haircutValue"></b></div><input id="haircut" type="range" min="0" max="20" step="1" data-bind="haircut" /></div>
+    <div class="control-note"><b>Policy used:</b> each night, DIME selects an SOC-loss budget to approach the next dusk target using the expected day gain, but is limited by brightness/service bounds and the reserve buffer. <strong>No brightness-to-SOC calibration is implied.</strong></div>
+   </section>
+   <section class="control-section">
+    <div class="section-title"><h3>Fixed plans</h3><span>SOC lost each night</span></div>
+    <div class="slider-field"><div class="slider-head"><label for="conservative"><span class="static-dot" style="background:var(--slate)"></span>Too conservative</label><b id="conservativeValue"></b></div><input id="conservative" type="range" min="2" max="38" step="1" data-bind="conservative" /></div>
+    <div class="slider-field"><div class="slider-head"><label for="normal"><span class="static-dot" style="background:var(--amber)"></span>Normal fixed plan</label><b id="normalValue"></b></div><input id="normal" type="range" min="2" max="45" step="1" data-bind="normal" /></div>
+    <div class="slider-field"><div class="slider-head"><label for="bold"><span class="static-dot" style="background:var(--red)"></span>Too aggressive</label><b id="boldValue"></b></div><input id="bold" type="range" min="2" max="55" step="1" data-bind="bold" /></div>
+   </section>
+  </div>
+ </aside>
+ <main class="main">
+  <section class="hero"><div><div class="eyebrow">Comparative energy allocation • rolling nightly decisions</div><h2>Four lighting plans. One solar streetlight.</h2></div><span class="hero-badge" id="horizonLabel">6 NIGHTS / 6 DAYS</span></section>
+  <section class="insight-banner" aria-label="Current scenario takeaway"><div><div class="title-mini">WHAT THIS EXAMPLE DEMONSTRATES</div><strong id="takeawayTitle">DIME reallocates energy instead of keeping the same loss every night.</strong><p id="takeawayText">Adjust solar gains and SOC targets to see the difference.</p></div><span class="insight-tag" id="takeawayBadge">6 rolling decisions</span></section>
+  <div class="lecture-bar">
+    <div><strong>Illustrative simulation</strong><p>Battery percentages and recharge are invented. Nightly drain illustrates the brightness trade-off.</p></div>
+    <div class="lecture-weather" role="group" aria-label="Daylight recharge preset"><strong>Daylight recharge</strong>    <div class="preset-row"><button type="button" class="preset" data-preset="mixed">Mixed</button><button type="button" class="preset" data-preset="cloudy">Cloudy</button><button type="button" class="preset" data-preset="sunny">Sunny</button></div>
+</div>
+  </div>
+  <section class="panel graph-panel">
+   <div class="panel-top"><div><h3>Battery SOC across consecutive nights and days</h3><p>Battery state of charge (SOC). Blue is night, sand is daylight. The red dashed line marks the reserve.</p></div><div class="legend" role="group" aria-label="Show or hide scenarios" id="legend"></div></div>
+   <div class="chart-wrap" id="chartWrap"><svg id="chart" role="img" aria-label="SOC trajectories for four nightly energy plans over several days"></svg><div class="chart-tooltip" id="tooltip"></div></div>
+   <div class="chart-explain"><span id="playStatus" style="display:none;color:#087c83;font-weight:800"></span><span>Shaded blue = night · sand = charging day</span><span>Teal dashed = next-dusk SOC target · red dashed = reserve · 100% = charge saturation</span><span class="fullscreen-tip">Choose Edit parameters to return to all controls</span></div>
+  </section>
+  <section class="trio" id="scenarioCards" aria-label="Comparison of plan outcomes"></section>
+  <section class="panel detail-panel"><div class="detail-top"><div><h3>How DIME changes its nightly SOC-loss budget</h3><p>Changes as soon as you adjust the expected day gain or target SOC.</p></div><div class="details-actions"><button id="showMethod" type="button">▸ How decisions work</button></div></div><div class="table-scroller"><table><thead><tr><th>Night</th><th>Start SOC</th><th>Next day gain</th><th>DIME chosen loss</th><th>End-of-night SOC</th><th>Next night-start SOC</th><th>Why this decision?</th></tr></thead><tbody id="nightRows"></tbody></table></div><div class="control-note" id="method" style="display:none;margin-top:10px">For each night: desired loss = current dusk SOC + max(0, predicted daylight gain − conservative haircut) − desired next-dusk SOC. The result is bounded by the minimum lighting-service loss, maximum adjustable loss and (current SOC − reserve − buffer). When the minimum service loss alone breaches reserve, the model flags an infeasible conflict rather than claiming a safe command. This demonstrates the <em>logic</em>, not a verified battery-energy or dimming model.</div></section>
+  <div class="footnote">Illustrative SOC simulation with assumed day gains — not measured field performance or physical control.</div>
+ </main>
+</div>
+<script>
+(()=>{'use strict';
+const $=(s)=>document.querySelector(s);
+const colors={conservative:'#66809a',normal:'#c07a35',bold:'#bd4964',dime:'#087c83'};
+const labels={conservative:'Conservative fixed',normal:'Normal fixed',bold:'Aggressive fixed',dime:'DIME adaptive'};
+const definitions={initial:68,reserve:20,nights:6,conservative:7,normal:19,bold:31,target:70,minLoss:7,maxLoss:32,guard:4,haircut:0,gains:[45,10,38,8,34,16],preset:'mixed'};
+let state=JSON.parse(JSON.stringify(definitions));
+let visible={conservative:true,normal:true,bold:true,dime:true};
+let lastResults=null;
+let playTimer=null,highlightedNight=null;
+let currentDataset='Synthetic mixed week';
+const clamp=(x,a,b)=>Math.min(b,Math.max(a,x));
+const fmt=x=>Number.isFinite(x)?(Math.round(x*10)/10).toLocaleString('en-GB',{maximumFractionDigits:1}):'—';
+const pp=x=>fmt(x)+' pp';
+const presets={mixed:[45,10,38,8,34,16,29],cloudy:[12,5,8,4,7,10,6],sunny:[43,46,40,50,42,37,44]};
+function runPlan(key){
+ let soc=state.initial, entries=[],points=[{x:0,y:soc,label:'Night 1 start',type:'dusk'}];
+ let clipTotal=0,clipDays=0,below=0,serviceConflicts=0;
+ const dusks=[soc];let minDawn=100,totalLoss=0;const days=state.nights;
+ for(let i=0;i<days;i++){
+  const start=soc, gain=state.gains[i]??0;
+  let loss,reason='',conflict=false, targetNext=state.target;
+  if(key==='dime'){
+   let expected=Math.max(0,gain-state.haircut);
+   const desired=start+expected-targetNext;
+   const safeCap=Math.max(0,start-state.reserve-state.guard);
+   if(safeCap<state.minLoss){loss=state.minLoss;conflict=true;serviceConflicts++;reason='Minimum service vs reserve conflict';}
+   else {
+    loss=clamp(desired,state.minLoss,Math.min(state.maxLoss,safeCap));
+    if(loss>=state.maxLoss-0.01&&desired>state.maxLoss)reason='High gain → maximum permitted lighting';
+    else if(loss<=state.minLoss+0.01&&desired<state.minLoss)reason='Low gain → preserve essential lighting';
+    else if(loss>=safeCap-0.01)reason='Reserve buffer limits spending';
+    else reason='Balances tomorrow’s recharge and dusk target';
+   }
+  } else {loss=state[key];reason='Fixed loss, regardless of next-day gain';}
+  const dawn=Math.max(0,start-loss);
+  const midday=Math.min(100,dawn+gain*.65);
+  const unbounded=dawn+gain;
+  const clip=Math.max(0,unbounded-100);
+  const dusk=Math.min(100,unbounded);
+  if(clip>0.001){clipDays++;clipTotal+=clip;}
+  if(dawn<state.reserve-0.0001)below++;
+  minDawn=Math.min(minDawn,dawn);
+  totalLoss+=Math.min(loss,start);
+  points.push({x:2*i+1,y:dawn,label:'Night '+(i+1)+' · dawn',type:'dawn'});
+  points.push({x:2*i+1.5,y:midday,label:'Day '+(i+1)+' · midday',type:'midday'});
+  points.push({x:2*i+2,y:dusk,label:'Day '+(i+1)+' · next dusk',type:'dusk'});
+  entries.push({night:i+1,start,loss,gain,dawn,midday,dusk,clip,reason,conflict,expected:Math.max(0,gain-state.haircut)});
+  dusks.push(dusk);soc=dusk;
+ }
+ const spread=Math.max(...dusks)-Math.min(...dusks);
+ const avg=totalLoss/days;
+ return {key,points,entries,clipTotal,clipDays,below,serviceConflicts,minDawn,spread,avg,totalLoss,dusks};
+}
+function compare(){return Object.fromEntries(['conservative','normal','bold','dime'].map(key=>[key,runPlan(key)]));}
+function gainWeather(g){return g>=32?'SUNNY':g<=12?'LOW SUN':'MIXED';}
+function renderGainInputs(){
+ $('#gainInputs').innerHTML=state.gains.slice(0,state.nights).map((g,i)=>`<div class="gain-row"><label for="gain-${i}">Day ${i+1}</label><input type="range" id="gain-${i}" min="0" max="55" step="1" data-gain="${i}" value="${g}" aria-label="Day ${i+1} forecast SOC gain"><strong id="gainValue-${i}">${g} pp</strong></div>`).join('');
+ document.querySelectorAll('[data-gain]').forEach(el=>el.addEventListener('input',ev=>{
+  const index=Number(ev.target.dataset.gain);state.gains[index]=Number(ev.target.value);
+  state.preset='custom';currentDataset='Custom illustrative gains';updatePresetButtons();render();
+ }));
+}
+function updatePresetButtons(){document.querySelectorAll('[data-preset]').forEach(el=>el.dataset.active=String(state.preset===el.dataset.preset));$('#datasetTag').textContent=currentDataset;}
+function renderValues(){
+ for(const id of ['initial','reserve','nights','conservative','normal','bold','target','minLoss','maxLoss','guard','haircut']){
+  const el=document.getElementById(id);if(el&&document.activeElement!==el)el.value=state[id];
+  const out=document.getElementById(id+'Value');if(out)out.textContent=id==='nights'?state[id]+' nights':(['initial','reserve','target'].includes(id)?fmt(state[id])+'%':pp(state[id]));
+ }
+ const targetNumber=$('#targetNumber');
+ if(targetNumber&&document.activeElement!==targetNumber)targetNumber.value=state.target;
+ document.querySelectorAll('[data-gain]').forEach(el=>{const i=Number(el.dataset.gain);if(document.activeElement!==el)el.value=state.gains[i];document.getElementById('gainValue-'+i).textContent=pp(state.gains[i]);});
+ $('#horizonLabel').textContent=`${state.nights} NIGHTS / ${state.nights} DAYS`;
+ $('#takeawayBadge').textContent=`${state.nights} rolling decisions`;
+}
+function renderLegend(){
+ $('#legend').innerHTML=Object.keys(labels).map(k=>`<button type="button" class="legend-button" data-line="${k}" aria-pressed="${visible[k]}"><span class="legend-line" style="background:${colors[k]}"></span>${labels[k]}</button>`).join('');
+ document.querySelectorAll('[data-line]').forEach(el=>el.addEventListener('click',()=>{const key=el.dataset.line;visible[key]=!visible[key];render();}));
+}
+function renderCards(results){
+ const sub={conservative:'too little light / wasted recharge',normal:'one schedule for every day',bold:'high brightness / reserve risk',dime:'adapts to next-day recharge'};
+ $('#scenarioCards').innerHTML=Object.keys(labels).map(k=>{
+  const r=results[k];let risk=r.below>0?`<span class="danger">${r.below} reserve breach${r.below>1?'es':''}</span>`:`<span class="good">No reserve breaches</span>`;
+  const cliff=r.clipDays?`${r.clipDays} day${r.clipDays>1?'s':''} saturated · ${pp(r.clipTotal)} unused`:'No charge saturation';
+  return `<div class="scenario-card" style="--accent:${colors[k]}"><h4>${labels[k]}</h4><div class="number">${fmt(r.avg)} <span>pp / night avg.</span></div><p><b>Lowest dawn:</b> ${fmt(r.minDawn)}% &nbsp;·&nbsp; ${risk}</p><p><b>Daylight clipping:</b> ${cliff}</p></div>`;
+ }).join('');
+ const con=results.conservative,bold=results.bold,dime=results.dime;
+ const title=con.clipDays&&bold.below? 'One fixed plan wastes recharge. Another risks the reserve. DIME changes its budget each night.' :
+   con.clipDays?'Fixed conservative operation wastes sunny-day recharge. DIME can choose a larger nightly budget.':
+   bold.below?'Aggressive fixed spending breaches reserve; DIME protects its target where feasible.':
+   'The same recharge pattern produces different outcomes under different nightly battery-use strategies.';
+ $('#takeawayTitle').textContent=title;
+ $('#takeawayText').textContent=`Conservative clipped ${fmt(con.clipTotal)} percentage points of simulated solar charge across ${con.clipDays} day(s). Aggressive plan breached the ${state.reserve}% reserve on ${bold.below} night(s). DIME varied its nightly loss from ${fmt(Math.min(...dime.entries.map(e=>e.loss)))} to ${fmt(Math.max(...dime.entries.map(e=>e.loss)))} pp.`;
+}
+function renderRows(r){
+ $('#nightRows').innerHTML=r.entries.map(e=>`<tr class="${highlightedNight===e.night-1?'row-focus':''}"><td><b>N${e.night}</b></td><td>${fmt(e.start)}%</td><td>${pp(e.gain)} <span class="pill">${gainWeather(e.gain)}</span></td><td><b>${pp(e.loss)}</b></td><td>${fmt(e.dawn)}%</td><td>${fmt(e.dusk)}%</td><td>${e.reason}${e.clip>0?` · ${pp(e.clip)} clipped`:''}</td></tr>`).join('');
+}
+function renderChart(results){
+ const svg=$('#chart'),wrap=$('#chartWrap');const rect=wrap.getBoundingClientRect();
+ const w=Math.max(560,Math.round(rect.width)),h=Math.max(230,Math.round(rect.height));
+ svg.setAttribute('viewBox',`0 0 ${w} ${h}`);
+ const l=44,r=17,t=33,b=36,ph=h-t-b,pw=w-l-r,n=state.nights;
+ const toX=v=>l+v/(2*n)*pw,toY=v=>t+(100-v)/100*ph;
+ let content=`<defs><clipPath id="socClip"><rect x="${l}" y="${t}" width="${pw}" height="${ph}"/></clipPath></defs>`;
+ for(let i=0;i<n;i++){
+  const nL=toX(i*2),nR=toX(i*2+1),dR=toX(i*2+2);
+  content+=`<rect x="${nL}" y="${t}" width="${nR-nL}" height="${ph}" fill="#eaf1f7" opacity=".8"/><rect x="${nR}" y="${t}" width="${dR-nR}" height="${ph}" fill="#fff5e7" opacity=".75"/>`;
+  content+=`<text x="${(nL+nR)/2}" y="${t-13}" font-size="${n>6?10:11}" fill="#547486" text-anchor="middle" font-weight="700">N${i+1}</text>`;
+  content+=`<text x="${(nR+dR)/2}" y="${t-13}" font-size="${n>6?9:10}" fill="#a77b41" text-anchor="middle">D${i+1} · +${state.gains[i]}</text>`;
+  content+=`<line x1="${dR}" y1="${t}" x2="${dR}" y2="${t+ph}" stroke="#d8e1e7" stroke-width="1" opacity=".7"/>`;
+ }
+ for(let y=0;y<=100;y+=20){
+  const yy=toY(y);content+=`<line x1="${l}" y1="${yy}" x2="${l+pw}" y2="${yy}" stroke="#ccd9df" stroke-width="1" opacity="${y===100?'.7':'.56'}"/><text x="${l-8}" y="${yy+3.4}" font-size="10" text-anchor="end" fill="#6f8a98">${y}</text>`;
+ }
+ let reserveY=toY(state.reserve);
+  const targetY=toY(state.target);
+  content+=`<line x1="${l}" y1="${targetY}" x2="${l+pw}" y2="${targetY}" stroke="#087c83" opacity=".54" stroke-width="1.5" stroke-dasharray="3 6"/>`;
+  content+=`<text x="${l+pw-6}" y="${Math.max(t+12,targetY-7)}" text-anchor="end" font-size="10" fill="#087c83" font-weight="800">DIME NEXT-DUSK TARGET ${state.target}%</text>`;
+  content+=`<line x1="${l}" y1="${reserveY}" x2="${l+pw}" y2="${reserveY}" stroke="#c5536c" stroke-width="1.7" stroke-dasharray="6,5"/><text x="${l+pw-6}" y="${Math.max(t+10,reserveY-6)}" text-anchor="end" font-size="10" fill="#b5435c" font-weight="800">RESERVE ${state.reserve}%</text>`;
+ content+=`<text x="${l-7}" y="${t-13}" text-anchor="end" font-size="10" fill="#547486" font-weight="800">SOC %</text>`;
+ if(highlightedNight!==null&&highlightedNight>=0&&highlightedNight<n){
+  content+=`<rect x="${toX(highlightedNight*2)}" y="${t}" width="${toX(highlightedNight*2+2)-toX(highlightedNight*2)}" height="${ph}" fill="#7fe9db" opacity=".16" stroke="#087c83" stroke-dasharray="6 4" stroke-width="1.5"/>`;
+ }
+ content+=`<text x="${l}" y="${h-9}" font-size="10" fill="#6f8a98">Starting SOC ${state.initial}%</text><text x="${l+pw}" y="${h-9}" text-anchor="end" font-size="10" fill="#6f8a98">After day ${n}</text>`;
+ let markerParts='';
+ const ordering=['conservative','normal','bold','dime'];
+ for(const key of ordering){
+  if(!visible[key])continue;
+  const res=results[key];let path='';
+  for(let j=0;j<res.points.length;j++){const p=res.points[j];path+=(j===0?'M':'L')+toX(p.x).toFixed(1)+' '+toY(p.y).toFixed(1)+' ';}
+  content+=`<path clip-path="url(#socClip)" d="${path}" fill="none" stroke="${colors[key]}" stroke-width="${key==='dime'?3.6:2.6}" stroke-linecap="round" stroke-linejoin="round" opacity="${key==='conservative'?'.9':'1'}"/>`;
+  for(const p of res.points){
+   if(p.type==='midday'&&key!=='dime'&&p.y!==100)continue;
+   if(p.type==='midday'&&key==='dime')continue;
+   const rr=p.type==='dusk'?3.7:2.7;
+   markerParts+=`<circle cx="${toX(p.x)}" cy="${toY(p.y)}" r="${rr}" fill="${colors[key]}" stroke="#fff" stroke-width="${p.type==='dusk'?'1.5':'1'}" opacity=".97"/>`;
+  }
+ }
+ // crosshair and user pointer targets on every checkpoint; do not alter data
+ content+=`<g id="crosshair" style="display:none"><line id="crossX" x1="0" x2="0" y1="${t}" y2="${t+ph}" stroke="#4f7284" stroke-width="1.2" stroke-dasharray="3 4"/></g>`;
+ content+=`<g clip-path="url(#socClip)">${markerParts}</g>`;
+ content+=`<rect id="chartHit" x="${l}" y="${t}" width="${pw}" height="${ph}" fill="transparent" style="cursor:crosshair"/>`;
+ svg.innerHTML=content;
+ const tip=$('#tooltip'),hit=$('#chartHit'),cross=$('#crosshair'),crossX=$('#crossX');
+ const marks=[];for(let i=0;i<n;i++){marks.push({x:2*i,label:`Night ${i+1} · start`});marks.push({x:2*i+1,label:`Night ${i+1} · dawn`});marks.push({x:2*i+1.5,label:`Day ${i+1} · solar midday`});marks.push({x:2*i+2,label:`Day ${i+1} · next dusk`});}
+ hit.addEventListener('pointermove',ev=>{
+  const box=svg.getBoundingClientRect();const svgX=(ev.clientX-box.left)*w/box.width;
+  const selected=marks.reduce((best,m)=>Math.abs(toX(m.x)-svgX)<Math.abs(toX(best.x)-svgX)?m:best,marks[0]);
+  cross.style.display='';crossX.setAttribute('x1',toX(selected.x));crossX.setAttribute('x2',toX(selected.x));
+  let lines=[`<b>${selected.label}</b>`];
+  for(const key of ['dime','conservative','normal','bold']){if(!visible[key])continue;
+   const p=results[key].points.find(x=>x.x===selected.x);
+   if(p)lines.push(`<span style="color:${colors[key]==='#66809a'?'#bcd5e7':colors[key]};font-weight:700">${labels[key]}</span>  ${fmt(p.y)}%`);
+  }
+  tip.innerHTML=lines.join('<br>');tip.style.display='block';
+  const x=clamp(ev.clientX-wrap.getBoundingClientRect().left+14,4,wrap.clientWidth-200);
+  const y=clamp(ev.clientY-wrap.getBoundingClientRect().top-16,8,wrap.clientHeight-110);
+  tip.style.left=x+'px';tip.style.top=y+'px';
+ });
+ hit.addEventListener('pointerleave',()=>{cross.style.display='none';tip.style.display='none';});
+}
+function render(){
+ if(state.nights>state.gains.length){while(state.gains.length<state.nights)state.gains.push(presets.mixed[state.gains.length]??18);}
+ if(state.maxLoss<state.minLoss)state.maxLoss=state.minLoss;
+ if(state.initial<state.reserve)state.initial=state.reserve;
+ const results=compare();lastResults=results;
+ renderValues();renderLegend();renderCards(results);renderRows(results.dime);renderChart(results);
+ const status=$('#playStatus');
+ if(highlightedNight===null)status.style.display='none';
+ else {const e=results.dime.entries[Math.min(highlightedNight,state.nights-1)];status.style.display='inline';status.textContent=`▶ Night ${e.night}: gain +${fmt(e.gain)} pp → DIME loss ${fmt(e.loss)} pp → next dusk ${fmt(e.dusk)}%`;}
+
+}
+function setPreset(preset){const seq=presets[preset];if(!seq)return;state.gains=seq.slice();while(state.gains.length<state.nights)state.gains.push(seq.at(-1));state.preset=preset;currentDataset='Synthetic '+(preset==='mixed'?'mixed week':preset==='cloudy'?'cloudy stretch':'high-sun stretch');renderGainInputs();updatePresetButtons();render();}
+function stopPlay(){if(playTimer!==null)clearInterval(playTimer);playTimer=null;highlightedNight=null;$('#playBtn').textContent='▶ Run nights';}
+function stepPlay(){
+ highlightedNight=highlightedNight===null?0:highlightedNight+1;
+ if(highlightedNight>=state.nights){stopPlay();render();return;}
+ render();
+}
+function togglePlay(){
+ if(playTimer!==null){stopPlay();render();return;}
+ highlightedNight=null;$('#playBtn').textContent='■ Stop playback';stepPlay();playTimer=setInterval(stepPlay,1500);
+}
+function reset(){stopPlay();state=JSON.parse(JSON.stringify(definitions));visible={conservative:true,normal:true,bold:true,dime:true};currentDataset='Synthetic mixed week';renderGainInputs();updatePresetButtons();render();}
+for(const el of document.querySelectorAll('input[data-bind]')){el.value=state[el.dataset.bind];el.addEventListener('input',()=>{
+ const key=el.dataset.bind, old=state.nights;state[key]=Number(el.value);
+ if(key==='nights'&&old!==state.nights)renderGainInputs();render();
+});}
+// The prominent numeric field and slider control the same DIME target. Recalculate
+// only through the existing render path; the fixed plans ignore state.target.
+$('#targetNumber').addEventListener('input',ev=>{
+ const raw=ev.target.value;
+ if(raw==='')return;
+ const value=Number(raw);
+ if(!Number.isFinite(value))return;
+ state.target=clamp(Math.round(value),35,95);
+ $('#target').value=state.target;
+ render();
+});
+$('#targetNumber').addEventListener('change',ev=>{
+ const value=Number(ev.target.value);
+ state.target=Number.isFinite(value)&&ev.target.value!==''?clamp(Math.round(value),35,95):state.target;
+ ev.target.value=state.target;
+ $('#target').value=state.target;
+ render();
+});
+document.querySelectorAll('[data-preset]').forEach(el=>el.addEventListener('click',()=>setPreset(el.dataset.preset)));
+$('#playBtn').addEventListener('click',togglePlay);
+$('#resetBtn').addEventListener('click',reset);
+$('#presentBtn').addEventListener('click',()=>{document.body.classList.toggle('presentation');$('#presentBtn').textContent=document.body.classList.contains('presentation')?'☷ Edit parameters':'▣ Projector view';requestAnimationFrame(render);});
+$('#showMethod').addEventListener('click',()=>{const el=$('#method');const show=el.style.display==='none';el.style.display=show?'block':'none';$('#showMethod').textContent=show?'▾ Hide method':'▸ How decisions work';});
+$('#importBtn').addEventListener('click',()=>$('#csvInput').click());
+$('#csvInput').addEventListener('change',async ev=>{
+ const file=ev.target.files?.[0];if(!file)return;
+ try{
+  const raw=await file.text();const lines=raw.trim().split(/\r?\n/).slice(0,100);
+  const numbers=[];
+  for(const line of lines){const cells=line.split(/[;,\t]/).map(x=>x.trim());
+   const cand=Number(cells[cells.length-1].replace('%',''));
+   if(Number.isFinite(cand)&&cand>=0&&cand<=55)numbers.push(cand);
+  }
+  if(numbers.length<3)throw Error('Provide at least three day gain values between 0 and 55 SOC percentage points.');
+  state.nights=clamp(numbers.length,3,7);state.gains=numbers.slice(0,7);state.preset='custom';currentDataset='Imported day-gain inputs · not verified forecasts';
+  renderGainInputs();updatePresetButtons();render();
+  alert('Loaded '+state.nights+' day-gain inputs. These are scenario inputs only, not as-issued weather forecasts or causal evidence of DIME benefit.');
+ }catch(err){alert('Could not import: '+err.message);}ev.target.value='';
+});
+$('#csvBtn').addEventListener('click',()=>{
+ if(!lastResults)return;
+ const headers=['night','next_day_gain_pp','conservative_loss_pp','normal_loss_pp','aggressive_loss_pp','dime_loss_pp','dime_start_soc','dime_end_of_night_soc','dime_next_dusk_soc','conservative_next_dusk_soc','normal_next_dusk_soc','aggressive_next_dusk_soc'];
+ const rows=[headers.join(',')];
+ for(let i=0;i<state.nights;i++){
+  const R=lastResults;const vals=[i+1,state.gains[i],R.conservative.entries[i].loss,R.normal.entries[i].loss,R.bold.entries[i].loss,R.dime.entries[i].loss,R.dime.entries[i].start,R.dime.entries[i].dawn,R.dime.entries[i].dusk,R.conservative.entries[i].dusk,R.normal.entries[i].dusk,R.bold.entries[i].dusk];rows.push(vals.join(','));
+ }
+ rows.push('SIMULATED INPUTS ONLY - NOT A FIELD PERFORMANCE CLAIM');
+ const blob=new Blob([rows.join('\n')],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='DIME_illustrative_SOC_loss_comparison.csv';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),500);
+});
+let redrawTimer=0;window.addEventListener('resize',()=>{clearTimeout(redrawTimer);redrawTimer=setTimeout(()=>renderChart(lastResults??compare()),100);});
+reset();
+})();
+</script>
+</body>
+</html>

@@ -1,11 +1,14 @@
 # Trustworthy AI Lab
 
-Two interactive experiments for **From Engineering to Trustworthy AI: What Real Systems Taught Me** — Salaheddine Chouikh, invited BCU guest presentation, 30 November 2026.
+Three interactive demonstrations for **From Engineering to Trustworthy AI: What Real Systems Taught Me** — Salaheddine Chouikh, invited BCU guest presentation, 30 November 2026.
 
 A lightweight Streamlit teaching app. No sign-in in the app, database, external API, live telemetry, training, or research infrastructure is required. Dependencies are Streamlit and Altair; all calculations are deterministic and use tiny in-memory examples.
 
-## Try the experiments
+## Try the demonstrations
 
+Open the [public Trustworthy AI Lab](https://trustworthy-ai-lab.streamlit.app/) or run it locally below. The navigation renders only the selected demonstration.
+
+- **DIME Autonomy Simulator.** Compare four simulated solar-streetlight lighting strategies under Mixed, Cloudy and Sunny recharge. The unchanged standalone file in `assets/` runs locally in the browser. Its assumed state-of-charge values are illustrative and do not represent field performance or physical control.
 - **Can You Save the Light?** Adjust energy, night length, the lighting floor and a planning reserve. See the brightness plan, remaining energy, and explicit unmet service. Try Comfortable, Close call and Impossible.
 - **Catch the Data Leakage.** Move observation, forecast and receipt times, then reveal eligibility. Compare an invented frozen input with a later reconstruction, separately from fixed historical audit aggregates.
 
@@ -32,7 +35,7 @@ Tests cover exact preset outcomes, an energy-conservation grid, feasibility boun
 
 ## Streamlit Community Cloud
 
-Deployment target: the public `Galuyoo/trustworthy-ai-research-lab` repository, branch `main`, entrypoint `streamlit_app.py`, Python 3.12. Choose an available short URL such as `trustworthy-ai-lab.streamlit.app` during deployment. No secrets are needed. A proposed URL is not evidence of a live deployment; see `docs/VALIDATION.md` for the actual verified status.
+The deployment tracks the public `Galuyoo/trustworthy-ai-research-lab` repository, branch `main`, entrypoint `streamlit_app.py`, Python 3.12. No secrets are needed.
 
 ## Scientific scope
 
