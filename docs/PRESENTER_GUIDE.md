@@ -4,8 +4,8 @@ Open the public Reliable AI Lab and keep the local copy ready. The presenter ope
 
 ## 16:25–16:35 · Lab 1
 
-1. Open **Information availability**. Keep observation 20:00, forecast 20:10 and receipt 20:20. Click **Show result**. The reading arrived too late.
-2. Move receipt to 20:10 to demonstrate the inclusive cutoff. Click **Reset evidence**.
+1. Open **Information availability**. Keep observation 20:00, forecast 20:10 and receipt 20:20. Point to the table below the timeline. The replay uses the late reading and scores 1 pp of error, while the live forecast scores 13 pp.
+2. Move receipt to 20:10. The reading is now available to both forecasts and both score 1 pp. Click **Reset evidence**.
 3. Open **Battery energy feasibility**. Choose **Close call**. The minimum needs 192 Wh and 198 Wh remain after a 10% reserve.
 4. Raise the reserve to 15%. Show 187 Wh available and a 5 Wh shortfall.
 5. Choose **Impossible** and set reserve to 0%. The 120 Wh battery serves 7.5 of the 12 hours. Click **Reset light**.

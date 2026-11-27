@@ -2,7 +2,7 @@
 from datetime import time, timedelta
 from pathlib import Path
 import streamlit as st
-from lab_models import PRESETS, Scenario, clock, eligible, plan_energy, reconstruction_example
+from lab_models import PRESETS, Scenario, eligible, plan_energy, reconstruction_example
 from lab_charts import energy_charts, event_timeline
 
 st.set_page_config(page_title="Reliable AI Lab · Salaheddine Chouikh", page_icon="💡", layout="wide")
@@ -15,6 +15,13 @@ h1,h2,h3 {letter-spacing:-0.035em;} h1 {font-size:clamp(2.2rem,4vw,3.4rem)!impor
 .result.warn {border-left-color:#b46b0c;background:#fff6e7;}
 .result.bad {border-left-color:#b90057;background:#fff1f7;}
 .result p {margin:0;}
+.forecast-scores{width:100%;border-collapse:collapse;font-size:.9rem;font-variant-numeric:tabular-nums}
+.forecast-scores caption{text-align:left;font-weight:650;margin-bottom:5px}
+.forecast-scores :is(th,td){padding:7px 8px;text-align:right;border-bottom:1px solid #ccd9e9}
+.forecast-scores th:first-child{text-align:left}
+.forecast-scores thead{background:#eef7fc}
+.forecast-scores .leakage{background:#fff6e7}
+@media(max-width:480px){.forecast-scores :is(th,td){padding:5px 4px}}
 .st-key-evidence_controls, .st-key-energy_controls {
     border-top:3px solid #00adef;background:#eef7fc;border-radius:0 0 6px 6px;padding:14px;
 }
@@ -34,8 +41,7 @@ def set_energy(name="Comfortable"):
 
 
 def reset_evidence():
-    st.session_state.update(observation=time(20, 0), cutoff=time(20, 10), receipt=time(20, 20),
-                            reveal=False, later=False)
+    st.session_state.update(observation=time(20, 0), cutoff=time(20, 10), receipt=time(20, 20))
 
 
 if "energy" not in st.session_state:
@@ -73,7 +79,6 @@ elif part == EVIDENCE:
                            ("Receipt time", "receipt")]:
             st.slider(label, min_value=time(20, 0), max_value=time(21, 0),
                       step=timedelta(minutes=1), format="HH:mm", key=key, persist_state="page")
-        st.toggle("Show result", key="reveal", persist_state="page")
         st.button("Reset evidence", on_click=reset_evidence, width="stretch")
     obs, cut, rec = [st.session_state[k].hour * 60 + st.session_state[k].minute
                      for k in ("observation", "cutoff", "receipt")]
@@ -81,30 +86,35 @@ elif part == EVIDENCE:
         st.altair_chart(event_timeline(obs, cut, rec), width="stretch", theme=None)
         if rec < obs:
             st.warning("Receipt precedes observation. Those times are inconsistent for a single event on one clock.")
-        if st.session_state.reveal:
-            observation_ok, receipt_ok = eligible(obs, cut), eligible(rec, cut)
-            if observation_ok == receipt_ok:
-                comparison = "Both times pass the cutoff." if receipt_ok else "Neither time passes the cutoff."
-            else:
-                comparison = "Only the receipt time passes." if receipt_ok else "Only the observation time passes."
-            result = "Available by the cutoff." if receipt_ok else "Unavailable at the cutoff."
-            st.html(f'<div class="result{"" if receipt_ok else " warn"}"><strong>{result}</strong> '
-                    f'{comparison}</div>')
+        else:
+            received_in_time = eligible(rec, cut)
+            observed_in_time = eligible(obs, cut)
+            live = reconstruction_example(received_in_time)
+            replay = reconstruction_example(observed_in_time)
+            leakage = observed_in_time and not received_in_time
 
-    with st.expander("How later data changes an error score"):
-        st.caption("Synthetic inputs, forecast and outcome")
-        st.toggle("Use the later reconstructed input", key="later", persist_state="page")
-        toy = reconstruction_example(st.session_state.later)
-        st.markdown(f"**{toy.label}** · The toy rule always predicts a 10 percentage-point SOC drop.")
-        m = st.columns(3)
-        m[0].metric("Input battery SOC", f"{toy.input_soc:.0f}%")
-        m[1].metric("Predicted later SOC", f"{toy.prediction_soc:.0f}%")
-        m[2].metric("Absolute error", f"{toy.absolute_error_pp:.0f} pp")
-        st.write("**Frozen issued input: 70% → prediction 60%.** "
-                 "**Later reconstructed input: 58% → prediction 48%.** Fixed invented outcome: **47%**.")
-        st.caption("The apparent error changes from 13 to 1 percentage point only because the input changes. "
-                   "This is a different retrospective forecast—not a correction to what the model originally issued. "
-                   "Reconstruction need not improve a score; this example was chosen to expose that possibility.")
+            def score_row(label, forecast, row_class=""):
+                return (f'<tr class="{row_class}"><th scope="row">{label}</th>'
+                        f'<td>{forecast.input_soc:.0f}%</td><td>{forecast.prediction_soc:.0f}%</td>'
+                        f'<td>{forecast.absolute_error_pp:.0f} pp</td></tr>')
+
+            st.html(
+                '<table class="forecast-scores"><caption>Forecast comparison</caption>'
+                '<thead><tr><th scope="col">Cutoff rule</th><th scope="col">Input SOC</th>'
+                '<th scope="col">Forecast SOC</th><th scope="col">Absolute error</th></tr></thead><tbody>'
+                + score_row("Live · receipt time", live)
+                + score_row("Replay · observation time", replay, "leakage" if leakage else "")
+                + '</tbody></table>'
+            )
+            if leakage:
+                st.warning("Data leakage: the replay uses a reading that arrived after the forecast cutoff.")
+            elif received_in_time:
+                st.caption("Both forecasts can use the reading because it arrived by the cutoff.")
+            else:
+                st.caption("Both forecasts use the earlier reading because the new reading was taken after the cutoff.")
+            st.caption(f"Synthetic example. Earlier reading: 70%. New reading: 58%. "
+                       f"The rule subtracts 10 percentage points. Simulated outcome: {live.outcome_soc:.0f}%.")
+
 
 elif part == ENERGY:
     st.caption("Synthetic simulation inspired by the published SETA battery-runtime and dimming study.")

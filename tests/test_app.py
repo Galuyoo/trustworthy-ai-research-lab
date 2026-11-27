@@ -37,26 +37,28 @@ def test_launch_presets_and_reset():
 
 def test_live_timestamp_boundaries_reset_and_synthetic_reconstruction():
     at = select(app(), EVIDENCE)
-    at.toggle(key="reveal").set_value(True).run()
-    assert any("Unavailable at the cutoff." in h.proto.body for h in at.get("html"))
-    at.slider(key="receipt").set_value(time(20,10)).run()
-    assert any("Both times pass the cutoff." in h.proto.body for h in at.get("html"))
-    at.slider(key="cutoff").set_value(time(20,0)).run()
-    assert any("Unavailable at the cutoff." in h.proto.body for h in at.get("html"))
-    at.slider(key="observation").set_value(time(20,30)).run()
+
+    def compare(live_error, replay_error):
+        [comparison] = [h.proto.body for h in at.get("html") if "Forecast comparison" in h.proto.body]
+        assert f'<td>{live_error} pp</td></tr>' in comparison.split("Replay · observation time")[0]
+        assert f'<td>{replay_error} pp</td></tr>' in comparison.split("Replay · observation time")[1]
+
+    compare(13, 1)
+    assert any("Data leakage" in w.value for w in at.warning)
+    at.slider(key="receipt").set_value(time(20, 10)).run()
+    compare(1, 1)
+    assert not at.warning
+    at.slider(key="observation").set_value(time(20, 8)).run()
+    at.slider(key="cutoff").set_value(time(20, 5)).run()
+    compare(13, 13)
+    assert not at.warning
+    at.slider(key="observation").set_value(time(20, 30)).run()
     assert any("inconsistent" in w.value for w in at.warning)
-    at.toggle(key="later").set_value(True).run()
-    assert next(m.value for m in at.metric if m.label == "Absolute error") == "1 pp"
-    select(at, ENERGY)
-    next(b for b in at.button if b.label == "Impossible").click().run()
-    select(at, EVIDENCE)
-    assert at.toggle(key="later").value
-    assert all(exp.label != "Optional · findings from the historical audits" for exp in at.expander)
+    assert all("Forecast comparison" not in h.proto.body for h in at.get("html"))
     next(b for b in at.button if b.label == "Reset evidence").click().run()
-    assert at.slider(key="observation").value == time(20,0)
-    assert at.slider(key="receipt").value == time(20,20)
-    assert not at.toggle(key="later").value
-    assert not at.toggle(key="reveal").value
+    assert at.slider(key="observation").value == time(20, 0)
+    assert at.slider(key="receipt").value == time(20, 20)
+    compare(13, 1)
     assert not at.exception
 
 
