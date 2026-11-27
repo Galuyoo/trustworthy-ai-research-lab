@@ -3,7 +3,7 @@ from datetime import time, timedelta
 from base64 import b64encode
 from pathlib import Path
 import streamlit as st
-from lab_models import AUDIT, PRESETS, Scenario, clock, eligible, plan_energy, reconstruction_example
+from lab_models import PRESETS, Scenario, clock, eligible, plan_energy, reconstruction_example
 from lab_charts import energy_charts, event_timeline
 
 st.set_page_config(page_title="Reliable AI Lab · Salaheddine Chouikh", page_icon="💡", layout="wide")
@@ -16,7 +16,6 @@ h1,h2,h3 {letter-spacing:-0.035em;} h1 {font-size:clamp(2.2rem,4vw,3.4rem)!impor
 .hero {border-top:5px solid #087f8c;padding:23px 0 20px;}
 .hero h1 {margin:0 0 8px;line-height:1.08;} .hero p {margin:8px 0;font-size:1.06rem;}
 .muted {color:#526573;} .badge {display:inline-block;border-radius:6px;background:#e0efed;color:#12636b;padding:5px 9px;font-size:.73rem;font-weight:750;letter-spacing:.07em;text-transform:uppercase;}
-.badge.research {background:#ebe7f6;color:#55417e;}
 .status {border-radius:12px;padding:17px 20px;margin:8px 0 14px;border:1px solid #9acbc6;background:#e7f4ef;}
 .status h3 {font-size:1.25rem;margin:0 0 5px;} .status p {margin:0;line-height:1.5;}
 .status.warn {border-color:#dbba7a;background:#fff3d9;} .status.bad {border-color:#df9ca2;background:#ffedec;}
@@ -26,7 +25,6 @@ h1,h2,h3 {letter-spacing:-0.035em;} h1 {font-size:clamp(2.2rem,4vw,3.4rem)!impor
 .verdict {border-radius:12px;padding:15px 18px;background:#fff;border:1px solid #d7e0de;}
 .verdict strong {font-size:1.6rem;display:block;} .verdict p {margin:0;font-size:.88rem;}
 .takeaway {border-left:4px solid #087f8c;padding:10px 16px;background:#edf3f1;font-size:1.05rem;line-height:1.5;margin:14px 0;}
-.research-box {border-top:3px solid #7e69a6;padding-top:16px;margin-top:20px;}
 [data-testid="stMetricValue"] {font-size:1.7rem;}
 [data-testid="stSlider"] {padding-bottom:6px;} a {text-underline-offset:3px;}
 @media(max-width:640px){.block-container{padding:1rem 1rem 2rem;}.hero{padding:16px 0}.lamp-scene strong{font-size:1.45rem;}h2{font-size:1.65rem!important;}}
@@ -51,15 +49,10 @@ if "observation" not in st.session_state:
 
 st.html("""<div class="hero"><div class="eyebrow">Birmingham City University · 30 November 2026 · Interactive research</div>
 <h1>Reliable AI Lab<span style="color:#087f8c">.</span></h1>
-<p><strong>From Engineering to Trustworthy AI: What Real Systems Taught Me</strong></p>
+<p><strong>Using AI to Support Engineering</strong></p>
 <p class="muted">Salaheddine Chouikh &nbsp;·&nbsp; Two presenter-led labs for the BCU guest lecture</p></div>""")
 app_dir = Path(__file__).resolve().parent
-source_file = app_dir / "SOURCE_URL.txt"
-links = "[GitHub ↗](https://github.com/Galuyoo) &nbsp; · &nbsp; " \
-        "[Published SETA paper ↗](https://doi.org/10.1016/j.seta.2026.105315) &nbsp; · &nbsp; " \
-        "[Research code ↗](https://github.com/Galuyoo/offgrid-streetlight-dimming-control)"
-if source_file.exists():
-    links += f" &nbsp; · &nbsp; [Demo source ↗]({source_file.read_text().strip()})"
+links = "[Published SETA paper ↗](https://doi.org/10.1016/j.seta.2026.105315)"
 st.caption("Follow the evidence available at forecast time, then see how energy limits shape an engineering decision.")
 
 PREDICTIONS = "01 — From Data to Reliable Predictions"
@@ -81,7 +74,8 @@ if lab == PREDICTIONS:
         st.caption("Start with the timestamp of a sensor reading and the moment it became available.")
 
 if lab == DECISIONS:
-    st.iframe(app_dir / "assets" / "DIME_Autonomy_Lecture.html",
+    st.caption("A synthetic teaching model for general engineering principles. The example has no connection to industrial systems.")
+    st.iframe(app_dir / "assets" / "Adaptive_Energy_Management_Simulator.html",
               alt="Interactive solar streetlight battery and lighting simulator")
 
 elif part == EVIDENCE:
@@ -140,31 +134,6 @@ elif part == EVIDENCE:
         st.caption("The apparent error changes from 13 to 1 percentage point only because the input changes. "
                    "This is a different retrospective forecast—not a correction to what the model originally issued. "
                    "Reconstruction need not improve a score; this example was chosen to expose that possibility.")
-
-    with st.expander("Optional · findings from the historical audits"):
-        st.html('<div class="research-box"><span class="badge research">Actual research · fixed historical audit aggregates</span></div>')
-        st.subheader("What changed in the audited subsets?")
-        st.caption("These counts stay fixed when you change the synthetic controls. Second research investigation: publication or acceptance is not asserted.")
-        with st.container(border=True):
-            st.markdown("**A1 · Timestamp eligibility**")
-            r = st.columns(3)
-            r[0].metric("Resource-status eligible", f"{AUDIT['resource_eligible']}/{AUDIT['a1_total']}")
-            r[1].metric("Receipt-time eligible", f"{AUDIT['receipt_eligible']}/{AUDIT['a1_total']}")
-            r[2].metric("Individual decisions changed", str(AUDIT["changed"]))
-            st.markdown("**62 resource-only + 4 receipt-only = 66 changed decisions.** "
-                        "The sets are not nested: 184 − 126 = 58 is the difference between totals, not the number of changes.")
-            st.caption("122 eligible under both rules · 594 under neither (derived from the supplied counts). "
-                       "782 paired forecasts · 13 nights · 11 poles · parser-usable subset.")
-            st.divider()
-            st.markdown("**A2 · Mutable reconstruction**")
-            r = st.columns(3)
-            r[0].metric("Forecasts audited", str(AUDIT["a2_forecasts"]))
-            r[1].metric("Predictions that differed", f"{AUDIT['a2_changed']}/{AUDIT['a2_comparisons']}")
-            r[2].metric("Nights in this subset", str(AUDIT["a2_nights"]))
-            st.caption("348 model comparisons across 87 forecasts. A changed prediction is not automatically a better prediction.")
-        st.warning("Scope matters: these findings describe particular audited research subsets from one deployment. "
-                   "They are not rates that generalise to all AI, all industrial sites or the whole fleet. "
-                   "A1 is parser-conditioned; A2 is a limited retrospective subset covering only three nights.")
 
     st.info("Next, use the battery energy feasibility part to see how a reliable forecast still has to respect an energy budget.")
 
@@ -254,5 +223,5 @@ with st.expander("Presenter quick guide & offline backup"):
                 "cutoff. Then open Battery energy feasibility, choose Close call and raise the reserve.\n\n"
                 "**Lab 2:** Open Projector view and Run nights on Mixed. Pause and use Next stage "
                 "to show the candidate, adaptive forecast and simulated outcome.\n\n"
-                "**Offline:** Install the dependencies and run the lab locally. The standalone DIME "
+                "**Offline:** Install the dependencies and run the lab locally. The standalone energy management "
                 "HTML and the screenshots can also be opened directly.")

@@ -27,20 +27,9 @@ Observation time <= cutoff and receipt time <= cutoff are evaluated separately. 
 
 The frozen SOC input is 70%; the separately invented later input is 58%. The deterministic rule predicts input minus 10 percentage points; the invented outcome is fixed at 47%. Errors therefore change from 13 to 1 percentage point. No model is trained or improved. This shows how rewriting inputs can change the score attached to a different retrospective forecast; it does not prove later reconstruction always improves metrics or that real audit predictions took these values.
 
-## Fixed historical aggregates
-
-Author-authorised counts were cross-checked against the existing presentation plans on 7 November 2026. No row-level industrial data were accessed or republished. The original private workspace is intentionally not linked from this public teaching project.
-
-A1: 782 paired forecasts in a parser-usable subset, 13 nights, 11 poles. Resource-status eligible 184; receipt-time eligible 126. Resource-only 62; receipt-only 4. The overlap is 122 and neither is 594 (derived). Difference in totals 58; symmetric difference 66. Sets are not nested. The minute-scale toy is not a scientific reproduction of these classifications.
-
-A2: 87 forecasts, 348 model comparisons, 345 predictions differed under later feature reconstruction. Limited retrospective subset, three nights. A prediction changing does not imply improved performance or causality. No acceptance/publication status is asserted for this second investigation.
-
-Both are particular audited subsets from one deployment. A1 is parser-conditioned; A2 is narrow and retrospective. These are not universal rates or full-fleet performance estimates. The app's widgets never mutate these facts.
-
 ## Sources and attribution
 
 Published research: https://doi.org/10.1016/j.seta.2026.105315
 
-Public reproducibility repository (read-only scientific reference): https://github.com/Galuyoo/offgrid-streetlight-dimming-control
 
 All application logic was written separately for this educational project. No production code, trained models, private datasets, credentials or proprietary artwork were copied. No external data is loaded at runtime.

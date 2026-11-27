@@ -1,7 +1,7 @@
 import itertools
 import math
 import pytest
-from lab_models import AUDIT, PRESETS, Scenario, eligible, plan_energy, reconstruction_example
+from lab_models import PRESETS, Scenario, eligible, plan_energy, reconstruction_example
 
 
 def test_presets_and_reserve_tipping_point():
@@ -56,18 +56,6 @@ def test_invalid_energy_inputs_rejected(scenario):
     (1211, 1210, False), (1209, 1210, True), (0, 0, True), (1439, 1438, False)])
 def test_timestamp_rule(timestamp, cutoff, expected):
     assert eligible(timestamp, cutoff) is expected
-
-
-def test_audit_counts_are_immutable_and_reconcile():
-    assert dict(AUDIT) == {"a1_total":782,"resource_eligible":184,"receipt_eligible":126,
-        "resource_only":62,"receipt_only":4,"changed":66,"a1_nights":13,"a1_poles":11,
-        "a2_forecasts":87,"a2_comparisons":348,"a2_changed":345,"a2_nights":3}
-    both = AUDIT["resource_eligible"] - AUDIT["resource_only"]
-    assert both == AUDIT["receipt_eligible"] - AUDIT["receipt_only"] == 122
-    assert AUDIT["resource_only"] + AUDIT["receipt_only"] == 66
-    assert 782 - both - 62 - 4 == 594
-    with pytest.raises(TypeError):
-        AUDIT["a1_total"] = 1
 
 
 def test_reconstruction_changes_input_not_rule_or_outcome():

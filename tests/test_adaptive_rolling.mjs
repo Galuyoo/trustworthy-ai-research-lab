@@ -3,7 +3,7 @@ import {readFileSync} from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
 
-const html = readFileSync(new URL('../assets/DIME_Autonomy_Lecture.html', import.meta.url), 'utf8');
+const html = readFileSync(new URL('../assets/Adaptive_Energy_Management_Simulator.html', import.meta.url), 'utf8');
 const script = html.split('<script>')[1].split('</script>')[0];
 
 function simulator() {
@@ -55,13 +55,13 @@ test('Mixed starts at 68% and derives the two reference nights in order', () => 
   assert.equal(sim.run().round.outcomes, undefined);
   sim.nextStage();
   assert.equal(sim.view().cutoff, 1);
-  assert.equal(sim.run().round.outcomes.dime.dawn, 36);
+  assert.equal(sim.run().round.outcomes.adaptive.dawn, 36);
   sim.nextStage();
   assert.equal(sim.view().cutoff, 2);
-  assert.equal(sim.run().round.outcomes.dime.dusk, 81);
+  assert.equal(sim.run().round.outcomes.adaptive.dusk, 81);
   assert.equal(sim.view().forecast, null);
   sim.nextStage();
-  assert.equal(sim.run().round.starts.dime, 81);
+  assert.equal(sim.run().round.starts.adaptive, 81);
   sim.nextStage();
   sim.nextStage();
   assert.equal(sim.run().round.choice.loss, 21);
@@ -95,7 +95,7 @@ test('Conservative forecast reduction affects predictions and preserves the real
   assert.equal(sim.run().round.expected, 35);
   assert.equal(sim.run().round.prediction.dusk, 71);
   sim.nextStage(); sim.nextStage();
-  assert.equal(sim.run().round.outcomes.dime.dusk, 81);
+  assert.equal(sim.run().round.outcomes.adaptive.dusk, 81);
 });
 
 test('Minimum lighting and reserve conflicts survive forecast and simulation', () => {
@@ -107,7 +107,7 @@ test('Minimum lighting and reserve conflicts survive forecast and simulation', (
   assert.equal(sim.run().round.choice.loss, 25);
   assert.equal(sim.run().round.prediction.dawn, 0);
   sim.nextStage();
-  assert.equal(sim.run().round.outcomes.dime.dawn, 0);
+  assert.equal(sim.run().round.outcomes.adaptive.dawn, 0);
 });
 
 test('Pause freezes time and scenario edits discard predictions and playback', () => {

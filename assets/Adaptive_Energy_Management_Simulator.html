@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>DIME Rolling Simulation</title>
+<title>Adaptive Energy Management Simulator</title>
 <style>
 :root{color-scheme:light;--ink:#102b39;--muted:#638090;--muted2:#86a0ab;--bg:#eef3f5;--white:#fff;--line:#dce6e9;--teal:#087c83;--tealbright:#1aa4a6;--amber:#c07a35;--slate:#66809a;--red:#bd4964;--night:#eef3f8;--day:#fff7e8;--shadow:0 11px 32px rgba(12,37,50,.075);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);min-width:320px}button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:3px solid #6cb7bb;outline-offset:2px}.topbar{background:#102b39;color:#f0f9fa;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;gap:15px;box-shadow:0 5px 20px #16334818}.brand{display:flex;align-items:center;gap:13px;min-width:0}.logo{width:39px;height:39px;border:1px solid #40858b;border-radius:12px;display:grid;place-items:center;background:#173e4b;color:#68dbd4;font-weight:900;font-size:20px}.brand h1{font-size:15px;margin:0;letter-spacing:.1em;font-weight:800}.brand p{margin:3px 0 0;color:#a9c4ca;font-size:11px;letter-spacing:.035em}.top-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:flex-end}.status{font-size:10px;color:#b3d1d0;letter-spacing:.07em;border:1px solid #3a6270;border-radius:99px;padding:7px 10px;white-space:nowrap}.button{background:#fff;color:#163e4b;border:1px solid #dae6e9;padding:9px 12px;border-radius:9px;font-weight:700;font-size:11px;transition:background .2s}.button:hover{background:#e5f6f5}.top-actions .button{background:#204757;color:#e1f8f8;border-color:#37616e}.top-actions .button:hover{background:#2e5b6a}.button.primary{background:#087c83;border-color:#087c83;color:white}.button.primary:hover{background:#08636a}.shell{display:grid;grid-template-columns:300px minmax(0,1fr);gap:20px;margin:23px auto 28px;width:min(1620px,calc(100% - 42px));align-items:start}.panel{background:#fff;border:1px solid #dfe8ea;border-radius:15px;box-shadow:var(--shadow)}.controls{position:sticky;top:20px;max-height:calc(100vh - 42px);overflow:auto;scrollbar-width:thin}.controls-header{padding:19px 19px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}.controls-header h2{font-size:14px;margin:0}.micro{font-size:10px;color:var(--muted);line-height:1.45}.controls-inner{padding:0 19px 18px}.control-section{padding:17px 0 14px;border-bottom:1px solid var(--line)}.control-section:last-child{border:none}.section-title{display:flex;align-items:center;justify-content:space-between;margin:0 0 13px}.section-title h3{margin:0;font-size:11px;letter-spacing:.075em;color:#35576a;text-transform:uppercase}.section-title span{font-size:10px;color:var(--muted)}.slider-field{margin:0 0 13px}.slider-field:last-child{margin-bottom:0}.slider-head{display:flex;align-items:center;justify-content:space-between;gap:5px;font-size:11px;color:#425c6b;margin-bottom:5px}.slider-head b{font-size:12px;color:#173746;font-variant-numeric:tabular-nums;white-space:nowrap}.slider-head .static-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}input[type=range]{width:100%;height:17px;margin:1px 0;accent-color:var(--teal)}.gain-row{display:grid;grid-template-columns:51px 1fr 42px;align-items:center;gap:7px;margin:11px 0}.gain-row label{font-size:11px;color:#456676;font-weight:700}.gain-row strong{font-variant-numeric:tabular-nums;font-size:11px;text-align:right}.gain-row input{min-width:0}.preset-row{display:flex;gap:5px;margin-bottom:12px}.preset{border:1px solid var(--line);background:#f8fbfb;border-radius:8px;color:#476775;padding:7px 9px;font-size:10px;font-weight:700;flex:1}.preset[data-active=true]{background:#e2f7f5;border-color:#58b3b2;color:#087c83}.control-note{border-radius:9px;background:#eff7f7;border:1px solid #d7e9e8;color:#4b7280;font-size:10px;line-height:1.55;padding:10px 11px;margin-top:12px}.linklike{color:#087c83;font-size:10px;font-weight:750;background:none;border:none;text-decoration:underline;text-underline-offset:2px;padding:0}.file-upload{display:none}.main{min-width:0}.hero{display:flex;align-items:start;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:5px 2px 16px}.eyebrow{font-size:10px;letter-spacing:.115em;font-weight:800;color:#087c83;margin:0 0 7px;text-transform:uppercase}.hero h2{font-size:clamp(21px,2.1vw,30px);font-weight:830;letter-spacing:-.032em;margin:0 0 7px;line-height:1.17}.hero p{font-size:12px;line-height:1.55;color:var(--muted);margin:0;max-width:810px}.hero .hero-badge{padding:8px 11px;border:1px solid #bfdadb;background:#e5f6f6;color:#107579;border-radius:9px;font-weight:800;font-size:10px;white-space:nowrap}.insight-banner{background:#143b48;color:#e9f8f9;border-radius:13px;padding:14px 19px;display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:14px}.insight-banner strong{font-size:15px;display:block;line-height:1.35}.insight-banner p{margin:4px 0 0;color:#b7d5d6;font-size:11px;line-height:1.48}.insight-tag{font-size:11px;padding:8px 11px;border-radius:8px;background:#245764;color:#c9f7f2;font-weight:780;white-space:nowrap}.graph-panel{padding:18px 19px 14px}.panel-top{display:flex;justify-content:space-between;align-items:start;gap:12px;flex-wrap:wrap}.panel-top h3{font-size:15px;margin:0 0 5px;letter-spacing:-.01em}.panel-top p{color:var(--muted);font-size:10px;line-height:1.45;margin:0}.legend{display:flex;gap:7px;flex-wrap:wrap;align-items:center}.legend-button{font-size:10px;display:flex;gap:7px;align-items:center;padding:7px 9px;border:1px solid var(--line);border-radius:7px;background:#fbfdfd;color:#405c6b;font-weight:740}.legend-button[aria-pressed=false]{opacity:.4}.legend-line{display:inline-block;width:17px;height:3px;border-radius:2px}.chart-wrap{margin-top:10px;width:100%;height:350px;position:relative}.chart-wrap svg{width:100%;height:100%;overflow:visible;touch-action:pan-y}.chart-tooltip{position:absolute;z-index:2;pointer-events:none;padding:9px 11px;border-radius:8px;background:rgba(16,43,57,.95);color:#f4f9fa;font-size:11px;line-height:1.5;white-space:pre-line;min-width:150px;max-width:230px;box-shadow:0 8px 24px #081d2470;display:none}.chart-tooltip b{color:#99e5dd}.chart-explain{font-size:10px;color:var(--muted);border-top:1px solid var(--line);padding-top:9px;margin-top:6px;display:flex;gap:15px;justify-content:space-between;flex-wrap:wrap}.trio{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin:14px 0}.scenario-card{background:#fff;border:1px solid #dfe7ea;border-top:4px solid var(--accent);border-radius:12px;padding:13px 14px;min-width:0;box-shadow:var(--shadow)}.scenario-card h4{margin:0 0 5px;color:#466474;font-size:11px}.scenario-card .number{font-size:23px;font-weight:850;letter-spacing:-.04em;line-height:1.15;font-variant-numeric:tabular-nums}.scenario-card .number span{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:0}.scenario-card p{font-size:10px;color:var(--muted);margin:7px 0 0;line-height:1.45}.scenario-card .danger{color:#b94760;font-weight:800}.scenario-card .good{color:#087c83;font-weight:800}.detail-panel{padding:17px 19px;margin-bottom:17px}.detail-top{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}.detail-panel h3{margin:0 0 4px;font-size:14px}.detail-panel p{font-size:10px;color:var(--muted);margin:0}.table-scroller{overflow:auto;max-width:100%;margin-top:13px}table{width:100%;border-collapse:collapse;font-size:11px;text-align:left;font-variant-numeric:tabular-nums}th{padding:10px 12px;background:#f3f7f8;text-transform:uppercase;letter-spacing:.055em;font-size:9px;color:#6c8592;white-space:nowrap}td{padding:10px 12px;border-bottom:1px solid #edf1f2;white-space:nowrap}td:last-child{white-space:normal}tbody tr:last-child td{border-bottom:none}tr.row-focus td{background:#e7f9f6}td b{color:var(--teal)}td .pill{font-size:9px;background:#edf7f7;color:#08747a;border-radius:100px;padding:4px 7px}.footnote{font-size:10px;color:#758d9b;line-height:1.55;padding:0 6px 8px}.footnote strong{color:#486878}.title-mini{font-size:10px;color:#e5f5f5;font-weight:800;letter-spacing:.05em}.fullscreen-tip{display:none}.details-actions{display:flex;gap:8px;align-items:center}.details-actions button{background:#f3f8f9;color:#476b76;font-size:10px;border:1px solid #d7e5e7;border-radius:7px;padding:7px 9px;font-weight:750}
@@ -114,8 +114,8 @@ body.presentation .topbar{padding-top:8px;padding-bottom:8px}
 </head>
 <body>
 <header class="topbar">
-  <div class="brand"><div class="logo" aria-hidden="true">D</div><div><h1>DIME Rolling Simulation</h1>
-  <p><b id="weatherName">Mixed</b> · Synthetic example · <span id="nightCounter">6 nights</span></p></div></div>
+  <div class="brand"><div><h1>Adaptive Energy Management Simulator</h1>
+  <p><b id="weatherName">Mixed</b> · Synthetic teaching example · <span id="nightCounter">6 nights</span></p></div></div>
   <div class="top-actions">
     <button class="button" id="playBtn">▶ Run nights</button>
     <button class="button" id="pauseBtn" disabled>Pause</button>
@@ -130,11 +130,11 @@ body.presentation .topbar{padding-top:8px;padding-bottom:8px}
  <aside class="panel controls" id="controls" aria-label="Interactive scenario parameters">
   <div class="controls-header"><div><h2>Experiment controls</h2><div class="micro">Changes recalculate all 4 scenarios</div></div><span class="micro">1 simulated light</span></div>
   <div class="controls-inner">
-   <section class="control-section target-section" aria-label="DIME SOC target control">
-    <div class="section-title"><h3>DIME night-start SOC target</h3><span>Adaptive only</span></div>
+   <section class="control-section target-section" aria-label="SOC target control">
+    <div class="section-title"><h3>night-start SOC target</h3><span>Adaptive only</span></div>
     <div class="target-box">
-     <div class="target-edit"><label for="targetNumber">Aim for this SOC at the <strong>next night start</strong></label><div class="target-number-wrap"><input id="targetNumber" type="number" min="35" max="95" step="1" value="70" inputmode="numeric" aria-label="DIME target at next night start, percent" /><span>%</span></div></div>
-     <input id="target" class="target-range" type="range" min="35" max="95" step="1" data-bind="target" aria-label="DIME target next night-start SOC" />
+     <div class="target-edit"><label for="targetNumber">Aim for this SOC at the <strong>next night start</strong></label><div class="target-number-wrap"><input id="targetNumber" type="number" min="35" max="95" step="1" value="70" inputmode="numeric" aria-label="target at next night start, percent" /><span>%</span></div></div>
+     <input id="target" class="target-range" type="range" min="35" max="95" step="1" data-bind="target" aria-label="target next night-start SOC" />
      <div class="target-scale"><span>35%</span><span><b id="targetValue">70%</b> target</span><span>95%</span></div>
      
     </div>
@@ -153,12 +153,12 @@ body.presentation .topbar{padding-top:8px;padding-bottom:8px}
     <input type="file" id="csvInput" class="file-upload" accept=".csv,.txt,text/csv,text/plain" aria-label="Import day gain scenarios" />
    </section>
    <section class="control-section">
-    <div class="section-title"><h3>DIME adaptive plan</h3><span>Recalculated every night</span></div>
+    <div class="section-title"><h3>Adaptive strategy plan</h3><span>Recalculated every night</span></div>
     <div class="slider-field"><div class="slider-head"><label for="minLoss">Minimum service loss / night</label><b id="minLossValue"></b></div><input id="minLoss" type="range" min="2" max="25" step="1" data-bind="minLoss" /></div>
     <div class="slider-field"><div class="slider-head"><label for="maxLoss">Maximum allowed loss / night</label><b id="maxLossValue"></b></div><input id="maxLoss" type="range" min="12" max="50" step="1" data-bind="maxLoss" /></div>
     <div class="slider-field"><div class="slider-head"><label for="guard">Reserve safety buffer</label><b id="guardValue"></b></div><input id="guard" type="range" min="0" max="15" step="1" data-bind="guard" /></div>
     <div class="slider-field"><div class="slider-head"><label for="haircut">Forecast recharge reduction</label><b id="haircutValue"></b></div><input id="haircut" type="range" min="0" max="20" step="1" data-bind="haircut" /></div>
-    <div class="control-note"><b>Policy used:</b> each night, DIME selects an SOC-loss budget to approach the next dusk target using the expected day gain, but is limited by brightness/service bounds and the reserve buffer. <strong>No brightness-to-SOC calibration is implied.</strong></div>
+    <div class="control-note"><b>Policy used:</b> each night, selects an SOC-loss budget to approach the next dusk target using the expected day gain, but is limited by brightness/service bounds and the reserve buffer. <strong>No brightness-to-SOC calibration is implied.</strong></div>
    </section>
    <section class="control-section">
     <div class="section-title"><h3>Fixed plans</h3><span>SOC lost each night</span></div>
@@ -199,18 +199,18 @@ body.presentation .topbar{padding-top:8px;padding-bottom:8px}
    <div class="chart-explain"><span>Shaded blue = night · sand = charging day</span><span>Teal dashed = next-dusk SOC target · red dashed = reserve · 100% = charge saturation</span><span class="fullscreen-tip">Choose Edit parameters to return to all controls</span></div>
   </section>
   <section class="trio" id="scenarioCards" aria-label="Comparison of plan outcomes"></section>
-  <section class="panel detail-panel"><div class="detail-top"><div><h3>How DIME changes its nightly SOC-loss budget</h3><p>During playback, cards and table summarise completed nights and days.</p></div><div class="details-actions"><button id="showMethod" type="button">▸ How decisions work</button></div></div><div class="table-scroller"><table><thead><tr><th>Night</th><th>Start SOC</th><th>Next day gain</th><th>DIME chosen loss</th><th>End-of-night SOC</th><th>Next night-start SOC</th><th>Why this decision?</th></tr></thead><tbody id="nightRows"></tbody></table></div><div class="control-note" id="method" style="display:none;margin-top:10px">For each night: desired loss = current dusk SOC + max(0, predicted daylight gain − conservative haircut) − desired next-dusk SOC. The result is bounded by the minimum lighting-service loss, maximum adjustable loss and (current SOC − reserve − buffer). When the minimum service loss alone breaches reserve, the model flags an infeasible conflict rather than claiming a safe command. This demonstrates the <em>logic</em>, not a verified battery-energy or dimming model.</div></section>
-  <div class="footnote">Synthetic SOC and recharge. Matching forecasts and outcomes reflect shared assumptions. SOC-loss budgets are not brightness percentages. No field measurements or physical control.</div>
+  <section class="panel detail-panel"><div class="detail-top"><div><h3>How changes its nightly SOC-loss budget</h3><p>During playback, cards and table summarise completed nights and days.</p></div><div class="details-actions"><button id="showMethod" type="button">▸ How decisions work</button></div></div><div class="table-scroller"><table><thead><tr><th>Night</th><th>Start SOC</th><th>Next day gain</th><th>chosen loss</th><th>End-of-night SOC</th><th>Next night-start SOC</th><th>Why this decision?</th></tr></thead><tbody id="nightRows"></tbody></table></div><div class="control-note" id="method" style="display:none;margin-top:10px">For each night: desired loss = current dusk SOC + max(0, predicted daylight gain − conservative haircut) − desired next-dusk SOC. The result is bounded by the minimum lighting-service loss, maximum adjustable loss and (current SOC − reserve − buffer). When the minimum service loss alone breaches reserve, the model flags an infeasible conflict rather than claiming a safe command. This demonstrates the <em>logic</em>, not a verified battery-energy or dimming model.</div></section>
+  <div class="footnote">Educational illustration of general principles. Synthetic SOC and recharge. Matching forecasts and outcomes reflect shared assumptions. SOC-loss budgets are not brightness percentages. No field measurements or physical control.</div>
  </main>
 </div>
 <script>
 (()=>{'use strict';
 const $=(s)=>document.querySelector(s);
-const colors={conservative:'#66809a',normal:'#c07a35',bold:'#bd4964',dime:'#087c83'};
-const labels={conservative:'Conservative fixed',normal:'Normal fixed',bold:'Aggressive fixed',dime:'DIME adaptive'};
+const colors={conservative:'#66809a',normal:'#c07a35',bold:'#bd4964',adaptive:'#087c83'};
+const labels={conservative:'Conservative fixed',normal:'Normal fixed',bold:'Aggressive fixed',adaptive:'Adaptive strategy'};
 const definitions={initial:68,reserve:20,nights:6,conservative:7,normal:19,bold:31,target:70,minLoss:7,maxLoss:32,guard:4,haircut:0,gains:[45,10,38,8,34,16],preset:'mixed'};
 let state=JSON.parse(JSON.stringify(definitions));
-let visible={conservative:true,normal:true,bold:true,dime:true};
+let visible={conservative:true,normal:true,bold:true,adaptive:true};
 let lastResults=null;
 let currentDataset='Synthetic mixed week';
 const clamp=(x,a,b)=>Math.min(b,Math.max(a,x));
@@ -222,7 +222,7 @@ function expectedGain(gain) {
 }
 
 function chooseLoss(key, start, expected) {
-  if (key !== 'dime') {
+  if (key !== 'adaptive') {
     return {loss: state[key], reason: 'Fixed loss, regardless of next-day gain', conflict: false};
   }
   const desired = start + expected - state.target;
@@ -290,7 +290,7 @@ function runPlan(key) {
   }
   return summarize(entries);
 }
-function compare(){return Object.fromEntries(['conservative','normal','bold','dime'].map(key=>[key,runPlan(key)]));}
+function compare(){return Object.fromEntries(['conservative','normal','bold','adaptive'].map(key=>[key,runPlan(key)]));}
 function gainWeather(g){return g>=32?'SUNNY':g<=12?'LOW SUN':'MIXED';}
 function renderGainInputs(){
  $('#gainInputs').innerHTML=state.gains.slice(0,state.nights).map((g,i)=>`<div class="gain-row"><label for="gain-${i}">Day ${i+1}</label><input type="range" id="gain-${i}" min="0" max="55" step="1" data-gain="${i}" value="${g}" aria-label="Day ${i+1} forecast SOC gain"><strong id="gainValue-${i}">${g} pp</strong></div>`).join('');
@@ -347,25 +347,25 @@ function renderChart(allResults){
  let reserveY=toY(state.reserve);
   const targetY=toY(state.target);
   content+=`<line x1="${l}" y1="${targetY}" x2="${l+pw}" y2="${targetY}" stroke="#087c83" opacity=".54" stroke-width="1.5" stroke-dasharray="3 6"/>`;
-  content+=`<text x="${l+pw-6}" y="${Math.max(t+12,targetY-7)}" text-anchor="end" font-size="10" fill="#087c83" font-weight="800">DIME NEXT-DUSK TARGET ${state.target}%</text>`;
+  content+=`<text x="${l+pw-6}" y="${Math.max(t+12,targetY-7)}" text-anchor="end" font-size="10" fill="#087c83" font-weight="800">NEXT-DUSK TARGET ${state.target}%</text>`;
   content+=`<line x1="${l}" y1="${reserveY}" x2="${l+pw}" y2="${reserveY}" stroke="#c5536c" stroke-width="1.7" stroke-dasharray="6,5"/><text x="${l+pw-6}" y="${Math.max(t+10,reserveY-6)}" text-anchor="end" font-size="10" fill="#b5435c" font-weight="800">RESERVE ${state.reserve}%</text>`;
  content+=`<text x="${l-7}" y="${t-13}" text-anchor="end" font-size="10" fill="#547486" font-weight="800">SOC %</text>`;
  content+=`<text x="${l}" y="${h-9}" font-size="10" fill="#6f8a98">Starting SOC ${state.initial}%</text><text x="${l+pw}" y="${h-9}" text-anchor="end" font-size="10" fill="#6f8a98">After day ${n}</text>`;
  let markerParts='';
  const toPath = points => points.map((point, i) =>
    (i === 0 ? 'M' : 'L') + toX(point.x).toFixed(1) + ' ' + toY(point.y).toFixed(1)).join(' ');
- if (forecast && visible.dime) {
+ if (forecast && visible.adaptive) {
    content += `<path data-forecast="true" clip-path="url(#socClip)" d="${toPath(forecast.points)}" fill="none" stroke="${forecast.color}" stroke-width="3" stroke-dasharray="8 6"/>`;
  }
- const ordering=['conservative','normal','bold','dime'];
+ const ordering=['conservative','normal','bold','adaptive'];
  for(const key of ordering){
   if(!visible[key])continue;
   const res=results[key];
-  content+=`<path data-series="${key}" data-through="${res.points.at(-1).x}" clip-path="url(#socClip)" d="${toPath(res.points)}" fill="none" stroke="${colors[key]}" stroke-width="${key==='dime'?3.6:2.6}" stroke-linecap="round" stroke-linejoin="round" opacity="${key==='conservative'?'.9':'1'}"/>`;
+  content+=`<path data-series="${key}" data-through="${res.points.at(-1).x}" clip-path="url(#socClip)" d="${toPath(res.points)}" fill="none" stroke="${colors[key]}" stroke-width="${key==='adaptive'?3.6:2.6}" stroke-linecap="round" stroke-linejoin="round" opacity="${key==='conservative'?'.9':'1'}"/>`;
   for(const p of res.points){
    if(!p.type)continue;
-   if(p.type==='midday'&&key!=='dime'&&p.y!==100)continue;
-   if(p.type==='midday'&&key==='dime')continue;
+   if(p.type==='midday'&&key!=='adaptive'&&p.y!==100)continue;
+   if(p.type==='midday'&&key==='adaptive')continue;
    const rr=p.type==='dusk'?3.7:2.7;
    markerParts+=`<circle cx="${toX(p.x)}" cy="${toY(p.y)}" r="${rr}" fill="${colors[key]}" stroke="#fff" stroke-width="${p.type==='dusk'?'1.5':'1'}" opacity=".97"/>`;
   }
@@ -385,7 +385,7 @@ function renderChart(allResults){
   const selected=availableMarks.reduce((best,m)=>Math.abs(toX(m.x)-svgX)<Math.abs(toX(best.x)-svgX)?m:best,availableMarks[0]);
   cross.style.display='';crossX.setAttribute('x1',toX(selected.x));crossX.setAttribute('x2',toX(selected.x));
   let lines=[`<b>${selected.label}</b>`];
-  for(const key of ['dime','conservative','normal','bold']){if(!visible[key])continue;
+  for(const key of ['adaptive','conservative','normal','bold']){if(!visible[key])continue;
    const p=results[key].points.find(x=>x.x===selected.x);
    if(p)lines.push(`<span style="color:${colors[key]==='#66809a'?'#bcd5e7':colors[key]};font-weight:700">${labels[key]}</span>  ${fmt(p.y)}%`);
   }
@@ -405,7 +405,7 @@ function render(){
  renderValues();
  for (const control of document.querySelectorAll('[data-line]')) control.setAttribute('aria-pressed', String(visible[control.dataset.line]));
  renderCards(summaries);
- renderRows(summaries.dime);
+ renderRows(summaries.adaptive);
  redrawPlayback();
 }
 function setPreset(preset){
@@ -420,7 +420,7 @@ function setPreset(preset){
 }
 function reset(){
  state=JSON.parse(JSON.stringify(definitions));
- visible={conservative:true,normal:true,bold:true,dime:true};
+ visible={conservative:true,normal:true,bold:true,adaptive:true};
  currentDataset='Synthetic mixed week';
  $('#playSpeed').value='1';
  renderGainInputs();
@@ -457,14 +457,14 @@ function enterStage() {
   if (stage === 0) {
     observe();
   } else if (stage === 1) {
-    round.candidate = battery(round.starts.dime, state.normal, round.expected);
+    round.candidate = battery(round.starts.adaptive, state.normal, round.expected);
   } else if (stage === 2) {
-    round.choice = chooseLoss('dime', round.starts.dime, round.expected);
-    round.prediction = battery(round.starts.dime, round.choice.loss, round.expected);
+    round.choice = chooseLoss('adaptive', round.starts.adaptive, round.expected);
+    round.prediction = battery(round.starts.adaptive, round.choice.loss, round.expected);
   } else if (stage === 3) {
     round.outcomes = Object.fromEntries(strategyKeys.map(key => [
       key,
-      simulateNight(key, night, round.starts[key], round.gain, key === 'dime' ? round.choice : undefined)
+      simulateNight(key, night, round.starts[key], round.gain, key === 'adaptive' ? round.choice : undefined)
     ]));
   }
 }
@@ -494,8 +494,8 @@ function playView(results) {
   }
   const prediction = round.prediction ?? round.candidate;
   const forecast = prediction && cutoff < x + 2 ? {
-    color: colors[round.prediction ? 'dime' : 'normal'],
-    points: projectedPoints(x, cutoff, round.starts.dime, prediction)
+    color: colors[round.prediction ? 'adaptive' : 'normal'],
+    points: projectedPoints(x, cutoff, round.starts.adaptive, prediction)
   } : null;
   return {results: visibleResults, cutoff, forecast};
 }
@@ -530,7 +530,7 @@ function renderDecision() {
   const stage = rolling?.stage ?? -1;
   const round = rolling?.round;
   const forecast = round?.prediction ?? round?.candidate;
-  const outcome = round?.outcomes?.dime;
+  const outcome = round?.outcomes?.adaptive;
   const progress = motionProgress();
   const showDawn = stage === 4 || (stage === 3 && progress === 1);
   const showDusk = stage === 4 && progress === 1;
@@ -545,7 +545,7 @@ function renderDecision() {
     else item.removeAttribute('aria-current');
   });
   const fields = {
-    startKpi: displaySoc(round?.starts.dime ?? state.initial),
+    startKpi: displaySoc(round?.starts.adaptive ?? state.initial),
     reserveKpi: `Reserve ${state.reserve}%`,
     eonKpi: displaySoc(forecast?.dawn),
     eodKpi: displaySoc(forecast?.dusk),
@@ -565,9 +565,9 @@ function renderDecision() {
     explanation = 'Use the current SOC, expected recharge and reserve to plan this night.';
   } else if (stage === 1) {
     heading = 'Candidate normal fixed plan';
-    explanation = 'Apply the fixed loss to the current DIME battery. The dashed line uses the expected recharge.';
+    explanation = 'Apply the fixed loss to the simulated battery. The dashed line uses the expected recharge.';
   } else if (stage === 2) {
-    heading = round.choice.conflict ? 'Minimum service vs reserve' : 'Adaptive DIME prediction';
+    heading = round.choice.conflict ? 'Minimum service vs reserve' : 'Adaptive prediction';
     explanation = round.choice.conflict
       ? 'Minimum lighting would use the reserve or its buffer. ' + targetText(forecast.dusk) + ' in the forecast.'
       : `EON ${displaySoc(round.candidate.dawn)} → ${displaySoc(forecast.dawn)}, EOD ${displaySoc(round.candidate.dusk)} → ${displaySoc(forecast.dusk)}. ${round.choice.reason}. ${targetText(forecast.dusk)} in the forecast.`;
@@ -686,7 +686,7 @@ for(const el of document.querySelectorAll('input[data-bind]')){el.value=state[el
  const key=el.dataset.bind, old=state.nights;state[key]=Number(el.value);
  if(key==='nights'&&old!==state.nights)renderGainInputs();scenarioChanged();
 });}
-// The prominent numeric field and slider control the same DIME target. Recalculate
+// The prominent numeric field and slider control the same target. Recalculate
 // only through the existing render path; the fixed plans ignore state.target.
 $('#targetNumber').addEventListener('input',ev=>{
  const raw=ev.target.value;
@@ -726,18 +726,18 @@ $('#csvInput').addEventListener('change',async ev=>{
   if(numbers.length<3)throw Error('Provide at least three day gain values between 0 and 55 SOC percentage points.');
   state.nights=clamp(numbers.length,3,7);state.gains=numbers.slice(0,7);state.preset='custom';currentDataset='Imported day-gain inputs · not verified forecasts';
   renderGainInputs();updatePresetButtons();scenarioChanged();
-  alert('Loaded '+state.nights+' day-gain inputs. These are scenario inputs only, not as-issued weather forecasts or causal evidence of DIME benefit.');
+  alert('Loaded '+state.nights+' day-gain inputs. These are scenario inputs only, not as-issued weather forecasts or evidence of field benefit.');
  }catch(err){alert('Could not import: '+err.message);}ev.target.value='';
 });
 $('#csvBtn').addEventListener('click',()=>{
  if(!lastResults || rolling)return;
- const headers=['night','next_day_gain_pp','conservative_loss_pp','normal_loss_pp','aggressive_loss_pp','dime_loss_pp','dime_start_soc','dime_end_of_night_soc','dime_next_dusk_soc','conservative_next_dusk_soc','normal_next_dusk_soc','aggressive_next_dusk_soc'];
+ const headers=['night','next_day_gain_pp','conservative_loss_pp','normal_loss_pp','aggressive_loss_pp','adaptive_loss_pp','adaptive_start_soc','adaptive_end_of_night_soc','adaptive_next_dusk_soc','conservative_next_dusk_soc','normal_next_dusk_soc','aggressive_next_dusk_soc'];
  const rows=[headers.join(',')];
  for(let i=0;i<state.nights;i++){
-  const R=lastResults;const vals=[i+1,state.gains[i],R.conservative.entries[i].loss,R.normal.entries[i].loss,R.bold.entries[i].loss,R.dime.entries[i].loss,R.dime.entries[i].start,R.dime.entries[i].dawn,R.dime.entries[i].dusk,R.conservative.entries[i].dusk,R.normal.entries[i].dusk,R.bold.entries[i].dusk];rows.push(vals.join(','));
+  const R=lastResults;const vals=[i+1,state.gains[i],R.conservative.entries[i].loss,R.normal.entries[i].loss,R.bold.entries[i].loss,R.adaptive.entries[i].loss,R.adaptive.entries[i].start,R.adaptive.entries[i].dawn,R.adaptive.entries[i].dusk,R.conservative.entries[i].dusk,R.normal.entries[i].dusk,R.bold.entries[i].dusk];rows.push(vals.join(','));
  }
  rows.push('SIMULATED INPUTS ONLY - NOT A FIELD PERFORMANCE CLAIM');
- const blob=new Blob([rows.join('\n')],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='DIME_illustrative_SOC_loss_comparison.csv';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),500);
+ const blob=new Blob([rows.join('\n')],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='illustrative_SOC_loss_comparison.csv';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),500);
 });
 let redrawTimer=0;window.addEventListener('resize',()=>{clearTimeout(redrawTimer);redrawTimer=setTimeout(()=>renderChart(lastResults??compare()),100);});
 renderLegend();

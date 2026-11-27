@@ -119,13 +119,3 @@ def reconstruction_example(later: bool = False) -> ToyForecast:
     outcome = 47.0
     return ToyForecast("Later reconstructed input" if later else "Frozen issued input",
                        input_soc, prediction, outcome, abs(prediction - outcome))
-
-
-# User-authorised aggregate facts, corroborated in presentation plans on 2026-11-07.
-# Constants cannot be mutated by widget/session state.
-AUDIT = MappingProxyType({
-    "a1_total": 782, "resource_eligible": 184, "receipt_eligible": 126,
-    "resource_only": 62, "receipt_only": 4, "changed": 66,
-    "a1_nights": 13, "a1_poles": 11,
-    "a2_forecasts": 87, "a2_comparisons": 348, "a2_changed": 345, "a2_nights": 3,
-})
