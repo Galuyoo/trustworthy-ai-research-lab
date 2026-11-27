@@ -34,6 +34,16 @@ h1,h2,h3 {letter-spacing:-0.035em;} h1 {font-size:clamp(2.2rem,4vw,3.4rem)!impor
 </style>""")
 
 
+def projector_chart(chart, height, *, timeline=False):
+    chart = chart.properties(height=height)
+    chart.config.axis.labelFontSize = 16
+    chart.config.axis.titleFontSize = 16
+    chart.config.legend.labelFontSize = 15
+    if timeline:
+        chart.layer[-1].mark.fontSize = 21
+    return chart
+
+
 def set_energy(name="Comfortable"):
     p = PRESETS[name]
     st.session_state.update(energy=int(p.energy_wh), night=int(p.night_h),
@@ -105,7 +115,10 @@ elif part == EVIDENCE:
     obs, cut, rec = [st.session_state[k].hour * 60 + st.session_state[k].minute
                      for k in ("observation", "cutoff", "receipt")]
     with chart:
-        st.altair_chart(event_timeline(obs, cut, rec, projector=projector), width="stretch", theme=None)
+        timeline = event_timeline(obs, cut, rec)
+        if projector:
+            timeline = projector_chart(timeline, 250, timeline=True)
+        st.altair_chart(timeline, width="stretch", theme=None)
         if rec < obs:
             st.warning("Receipt precedes observation. Those times are inconsistent for a single event on one clock.")
         else:
@@ -170,7 +183,9 @@ elif part == ENERGY:
             detail = f"Without reserve, the shortfall is {plan.physical_gap_wh:.0f} Wh. With reserve, {plan.unmet_h:.2f} hours are unserved."
         energy = f"{plan.budget_wh:.0f} Wh usable · {plan.floor_wh:.0f} Wh required"
         st.html(f'<div class="result {kind}"><strong>{result}</strong> {detail}<p>{energy}</p></div>')
-        for chart in energy_charts(plan, projector=projector):
+        for chart in energy_charts(plan):
+            if projector:
+                chart = projector_chart(chart, 185)
             st.altair_chart(chart, width="stretch", theme=None)
         st.caption("Dashed amber line: battery reserve.")
     with st.expander("How this simulation works · assumptions & research limits"):
