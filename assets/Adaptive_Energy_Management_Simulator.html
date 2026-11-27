@@ -56,7 +56,7 @@ details[open] summary{margin-bottom:8px}
 .gain-row input{margin:0}
 .note{margin:10px 0}
 .presentation main{max-width:none}
-.presentation .chart-wrap{height:clamp(210px,30vw,380px)}
+.presentation .chart-wrap{height:clamp(210px,26vw,380px)}
 .presentation .control-grid,.presentation details{display:none}
 @media(max-width:650px){.control-grid,.gains{grid-template-columns:repeat(2,minmax(0,1fr))}.controls{margin-top:12px}.chart-wrap{margin-top:8px}.chart-key{font-size:.76rem}}
 @media(max-width:365px){.control-grid,.gains{grid-template-columns:1fr}}
@@ -97,6 +97,7 @@ details[open] summary{margin-bottom:8px}
 <div class="slider-field"><div class="slider-head"><label for="nights">Consecutive nights</label><b id="nightsValue"></b></div><input id="nights" type="range" min="3" max="7" step="1" data-bind="nights" /></div>
   </div>
   <div class="toolbar" role="group" aria-label="Playback">
+   <button type="button" id="manualBtn">Start paused</button>
    <button type="button" id="playBtn">Run nights</button>
    <button type="button" id="pauseBtn" disabled>Pause</button>
    <button type="button" id="nextBtn" disabled>Next stage</button>
@@ -425,7 +426,7 @@ function renderDecision() {
  const status = $('#playbackStatus');
  let message = finished ? 'All nights complete.' : '';
  if (stage === 0) {
-  message = `Battery starts at ${displaySoc(round.starts.adaptive)}. The next day is expected to add ${pp(round.expected)}. Reserve: ${state.reserve}%.`;
+  message = `Battery starts at ${displaySoc(round.starts.adaptive)}. Expected recharge: ${pp(round.expected)}. Reserve: ${state.reserve}%. Next-night target: ${state.target}%.`;
  } else if (stage === 1) {
   message = `The standard plan uses ${pp(state.normal)} overnight. Forecast: ${displaySoc(forecast.dawn)} at dawn and ${displaySoc(forecast.dusk)} at dusk.`;
  } else if (stage === 2) {
@@ -514,11 +515,11 @@ function schedule() {
   if (rolling && !rolling.paused && frameId === null) frameId = requestAnimationFrame(tick);
 }
 
-function beginPlay() {
+function beginPlay(paused = false) {
   stopFrame();
   finished = false;
   rolling = {
-    night: 0, stage: 0, elapsed: 0, stamp: null, painted: 0, paused: false,
+    night: 0, stage: 0, elapsed: 0, stamp: null, painted: 0, paused,
     history: Object.fromEntries(strategyKeys.map(key => [key, []]))
   };
   enterStage();
@@ -576,7 +577,8 @@ $('#targetNumber').addEventListener('change',ev=>{
  scenarioChanged();
 });
 document.querySelectorAll('[data-preset]').forEach(el=>el.addEventListener('click',()=>setPreset(el.dataset.preset)));
-$('#playBtn').addEventListener('click',beginPlay);
+$('#manualBtn').addEventListener('click', () => beginPlay(true));
+$('#playBtn').addEventListener('click', () => beginPlay());
 $('#pauseBtn').addEventListener('click',togglePause);
 $('#nextBtn').addEventListener('click',nextStage);
 $('#resetBtn').addEventListener('click',reset);

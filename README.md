@@ -1,17 +1,30 @@
 # Reliable AI Lab
 
-Two presenter-led labs for **Using AI to Support Engineering** — Salaheddine Chouikh, invited BCU guest presentation, 30 November 2026.
+Reliable AI Lab is a set of interactive experiments about evidence, energy constraints and adaptive decisions. Salaheddine Chouikh developed it for an invited Birmingham City University guest lecture on 30 November 2026. The experiments also support independent study and classroom demonstrations.
 
-A lightweight Streamlit teaching app. No sign-in in the app, database, external API, live telemetry, training, or research infrastructure is required. Dependencies are Streamlit and Altair; all calculations are deterministic and use tiny in-memory examples.
+**[Open the live application](https://trustworthy-ai-lab.streamlit.app/)**
 
-## Follow the two labs
+| Lab 1 · Forecast evaluation | Lab 2 · Adaptive decisions |
+| --- | --- |
+| ![Timeline and side-by-side live and replay forecasts](docs/images/lab1-information.jpg) | ![Battery charge graph with the adaptive plan stage selected](docs/images/lab2-adaptive.jpg) |
 
-Open the [public Reliable AI Lab](https://trustworthy-ai-lab.streamlit.app/). The app renders the selected lab and, in Lab 1, the selected part.
+## Experiments
 
-1. **From Data to Reliable Predictions.** Start with the synthetic information-availability timeline. Then open the synthetic energy feasibility exercise inspired by the published SETA battery-runtime study. The timeline concerns a separate investigation.
-2. **From Predictions to Decisions.** Use the standalone adaptive energy management simulator embedded in the app. Compare rolling forecasts, simulated outcomes and four lighting strategies under Mixed, Cloudy and Sunny recharge. Data and decisions are illustrative and have no connection to physical control.
+1. **Information availability.** Change observation, receipt and cutoff times to compare live and replay forecast errors. See when delayed data leaks into a replay.
+2. **Battery energy feasibility.** Change energy, brightness, night length and reserve. Compare usable energy with the minimum required and see how a shortfall affects lighting.
+3. **Adaptive energy management.** Compare three fixed strategies and one adaptive plan across synthetic recharge scenarios. Run automatically or start paused for a step-by-step comparison.
 
-## Run locally (Python 3.12)
+## Learning objectives
+
+- Build and evaluate forecasts using information available at the decision cutoff.
+- Distinguish forecast quality from physical feasibility and understand what a reserve trades off against service.
+- Separate forecasts, decisions and outcomes while comparing fixed and adaptive policies.
+
+Use the [student guide](docs/STUDENT_GUIDE.md) for exercises or the [presenter guide](docs/PRESENTER_GUIDE.md) for a walkthrough.
+
+## Local installation and offline use
+
+Download the tagged source archive or clone this repository. In the project folder, use Python 3.12.
 
 ```bash
 python -m venv .venv
@@ -21,9 +34,9 @@ python -m pip install -r requirements.txt
 python -m streamlit run streamlit_app.py
 ```
 
-Open the local URL printed by Streamlit. Install the dependencies before travelling; after installation, the app works offline. The paper link requires internet.
+Install dependencies while online. Then open the local address printed by Streamlit. Both labs run without internet, accounts or API credentials. The [standalone simulator](assets/Adaptive_Energy_Management_Simulator.html) also opens directly in a browser without Python. The published paper link requires internet access.
 
-## Run tests
+## Testing and reproducibility
 
 ```bash
 python -m pip install -r requirements-dev.txt
@@ -31,24 +44,18 @@ python -m pytest -q
 node --test tests/test_adaptive_rolling.mjs
 ```
 
-Tests cover exact preset outcomes, an energy-conservation grid, feasibility boundaries, inclusive timestamp rules, and Streamlit widget interactions and resets.
+The deterministic examples have tests for timestamp boundaries, energy conservation, feasibility, scenario outcomes, navigation and simulation playback. See the [changelog](CHANGELOG.md) for release changes.
 
-## Streamlit Community Cloud
+## Scientific assumptions and limitations
 
-The deployment tracks the public `Galuyoo/trustworthy-ai-research-lab` repository, branch `main`, entrypoint `streamlit_app.py`, Python 3.12. No secrets are needed.
+All examples use synthetic inputs. The energy budget assumes constant power per brightness level under a linear power model, with fixed starting energy and a planning reserve. The adaptive exercise compares policies under assumed recharge, and its simulated outcomes do not measure field performance. The [methods and limitations](docs/METHODS_AND_LIMITATIONS.md) document the exact assumptions.
 
-## Scientific scope
+## Related published research
 
-**Every user-controlled example is synthetic.** Lab 1’s battery experiment is an educational energy budget inspired by the published SETA paper; it neither reproduces the trained battery model nor the paper's numerical experiments. The original research used NASA laboratory battery discharge data and simulation-based evaluation with its own horizon definitions. No field validation or measured savings are claimed.
+The battery feasibility experiment draws on topics from *Energy reliability and feasibility analysis for battery-constrained off-grid solar street lighting*, by Salaheddine Chouikh, Nouh Elmitwally and Faisal Saeed. The published paper used laboratory battery data and simulation under its own experimental protocol. The examples in this app have their own synthetic values and methods. [Published paper](https://doi.org/10.1016/j.seta.2026.105315)
 
-Lab 1’s timeline links the simulated live forecast and replay to the timestamp controls so their input, prediction and error can be compared at the same cutoff. The published SETA research concerns battery runtime and dimming.
+## Author, acknowledgements and licence
 
-See [assumptions and limitations](docs/METHODS_AND_LIMITATIONS.md) and the [presenter guide](docs/PRESENTER_GUIDE.md).
+**Salaheddine Chouikh** is the author of Reliable AI Lab. Thanks to Dr Nouh Elmitwally for organising the BCU guest lecture. Nouh Elmitwally and Faisal Saeed are coauthors of the related research.
 
-## Public research
-
-- [Published SETA paper](https://doi.org/10.1016/j.seta.2026.105315)
-
-Chouikh, S., Elmitwally, N., & Saeed, F. (2026). *Energy reliability and feasibility analysis for battery-constrained off-grid solar street lighting: an uncertainty-aware dimming control framework.* Sustainable Energy Technologies and Assessments, 93, 105315.
-
-Acknowledgements: Nouh Elmitwally and Faisal Saeed, coauthors of the SETA paper. This independent teaching project contains no proprietary industrial assets or private observations.
+Cite this software using [CITATION.cff](CITATION.cff). The software is available under the [MIT licence](LICENSE).
