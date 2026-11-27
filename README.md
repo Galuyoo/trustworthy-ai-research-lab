@@ -39,9 +39,9 @@ The deployment tracks the public `Galuyoo/trustworthy-ai-research-lab` repositor
 
 ## Scientific scope
 
-**Every user-controlled example is synthetic.** Experiment 1 is an educational energy budget inspired by the published SETA paper; it neither reproduces the trained battery model nor the paper's numerical experiments. The original research used NASA laboratory battery discharge data and simulation-based evaluation with its own horizon definitions. No field validation or measured savings are claimed.
+**Every user-controlled example is synthetic.** Lab 1’s battery experiment is an educational energy budget inspired by the published SETA paper; it neither reproduces the trained battery model nor the paper's numerical experiments. The original research used NASA laboratory battery discharge data and simulation-based evaluation with its own horizon definitions. No field validation or measured savings are claimed.
 
-Lab 1's timeline and reconstruction are separate synthetic teaching examples about information availability. The published SETA research concerns battery runtime and dimming.
+Lab 1’s timeline links the simulated live forecast and replay to the timestamp controls so their input, prediction and error can be compared at the same cutoff. The published SETA research concerns battery runtime and dimming.
 
 See [assumptions and limitations](docs/METHODS_AND_LIMITATIONS.md) and the [presenter guide](docs/PRESENTER_GUIDE.md).
 

@@ -23,9 +23,9 @@ Toy timestamps share one date, one clock and minute resolution. A record passes 
 
 Observation time <= cutoff and receipt time <= cutoff are evaluated separately. Receipt < observation is shown as a clock-inconsistent sensor event, not quietly accepted as a physical history. Real resource-status timestamps need not have the same semantics as a sensor event timestamp. The toy does not reproduce the full A1 inclusion protocol, parser, matching or freshness rules, and its inconsistent-clock state does not explain the real receipt-only cases.
 
-## Later reconstruction illustration
+## Live and replay forecast comparison
 
-The frozen SOC input is 70%; the separately invented later input is 58%. The deterministic rule predicts input minus 10 percentage points; the invented outcome is fixed at 47%. Errors therefore change from 13 to 1 percentage point. No model is trained or improved. This shows how rewriting inputs can change the score attached to a different retrospective forecast; it does not prove later reconstruction always improves metrics or that real audit predictions took these values.
+Both rules fall back to the earlier 70% SOC reading when the new 58% reading fails their cutoff. The simulated live rule uses receipt time, and the replay rule uses observation time. The rule predicts input minus 10 percentage points against a fixed synthetic outcome of 47%. If the reading was observed before cutoff but arrived afterward, the replay reports 1 pp of absolute error and the live forecast reports 13 pp. If both rules allow or exclude the new reading, the scores match. The example illustrates how leakage can make a replay look better; a different outcome could make the replay look worse.
 
 ## Sources and attribution
 
