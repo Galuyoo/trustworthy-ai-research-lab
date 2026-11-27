@@ -14,8 +14,8 @@ The timeline is a synthetic information-availability example. The battery exerci
 
 ## 16:35–16:45 · Lab 2
 
-1. Open **From Predictions to Decisions** and choose **Projector view**. Scroll the simulator header into view.
-2. On Mixed, click **Reset example**, **Run nights** and **Pause** at Observe. Point out the 68% starting charge and expected recharge.
+1. Open **From Predictions to Decisions**. Use **Projector view** below the graph to enlarge the plot.
+2. On Mixed, click **Reset example**, **Run nights** and **Pause** at Observe. Point out the 68% starting charge and expected recharge in the playback status below the buttons.
 3. Advance through **Predict** and **Decide**. Compare the fixed candidate forecast with the revised dashed adaptive forecast.
 4. Advance through **Night** and **Day**. Compare the solid synthetic outcomes with the forecast. The first simulated dusk value becomes the next starting charge.
 5. If time allows, compare Cloudy or Sunny. Click **Reset example** and return to the closing slide.

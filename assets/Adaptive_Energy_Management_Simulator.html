@@ -1,218 +1,132 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Adaptive Energy Management Simulator</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Battery charge over time</title>
 <style>
-:root{color-scheme:light;--ink:#102b39;--muted:#638090;--muted2:#86a0ab;--bg:#eef3f5;--white:#fff;--line:#dce6e9;--teal:#087c83;--tealbright:#1aa4a6;--amber:#c07a35;--slate:#66809a;--red:#bd4964;--night:#eef3f8;--day:#fff7e8;--shadow:0 11px 32px rgba(12,37,50,.075);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);min-width:320px}button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:3px solid #6cb7bb;outline-offset:2px}.topbar{background:#102b39;color:#f0f9fa;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;gap:15px;box-shadow:0 5px 20px #16334818}.brand{display:flex;align-items:center;gap:13px;min-width:0}.logo{width:39px;height:39px;border:1px solid #40858b;border-radius:12px;display:grid;place-items:center;background:#173e4b;color:#68dbd4;font-weight:900;font-size:20px}.brand h1{font-size:15px;margin:0;letter-spacing:.1em;font-weight:800}.brand p{margin:3px 0 0;color:#a9c4ca;font-size:11px;letter-spacing:.035em}.top-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:flex-end}.status{font-size:10px;color:#b3d1d0;letter-spacing:.07em;border:1px solid #3a6270;border-radius:99px;padding:7px 10px;white-space:nowrap}.button{background:#fff;color:#163e4b;border:1px solid #dae6e9;padding:9px 12px;border-radius:9px;font-weight:700;font-size:11px;transition:background .2s}.button:hover{background:#e5f6f5}.top-actions .button{background:#204757;color:#e1f8f8;border-color:#37616e}.top-actions .button:hover{background:#2e5b6a}.button.primary{background:#087c83;border-color:#087c83;color:white}.button.primary:hover{background:#08636a}.shell{display:grid;grid-template-columns:300px minmax(0,1fr);gap:20px;margin:23px auto 28px;width:min(1620px,calc(100% - 42px));align-items:start}.panel{background:#fff;border:1px solid #dfe8ea;border-radius:15px;box-shadow:var(--shadow)}.controls{position:sticky;top:20px;max-height:calc(100vh - 42px);overflow:auto;scrollbar-width:thin}.controls-header{padding:19px 19px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}.controls-header h2{font-size:14px;margin:0}.micro{font-size:10px;color:var(--muted);line-height:1.45}.controls-inner{padding:0 19px 18px}.control-section{padding:17px 0 14px;border-bottom:1px solid var(--line)}.control-section:last-child{border:none}.section-title{display:flex;align-items:center;justify-content:space-between;margin:0 0 13px}.section-title h3{margin:0;font-size:11px;letter-spacing:.075em;color:#35576a;text-transform:uppercase}.section-title span{font-size:10px;color:var(--muted)}.slider-field{margin:0 0 13px}.slider-field:last-child{margin-bottom:0}.slider-head{display:flex;align-items:center;justify-content:space-between;gap:5px;font-size:11px;color:#425c6b;margin-bottom:5px}.slider-head b{font-size:12px;color:#173746;font-variant-numeric:tabular-nums;white-space:nowrap}.slider-head .static-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}input[type=range]{width:100%;height:17px;margin:1px 0;accent-color:var(--teal)}.gain-row{display:grid;grid-template-columns:51px 1fr 42px;align-items:center;gap:7px;margin:11px 0}.gain-row label{font-size:11px;color:#456676;font-weight:700}.gain-row strong{font-variant-numeric:tabular-nums;font-size:11px;text-align:right}.gain-row input{min-width:0}.preset-row{display:flex;gap:5px;margin-bottom:12px}.preset{border:1px solid var(--line);background:#f8fbfb;border-radius:8px;color:#476775;padding:7px 9px;font-size:10px;font-weight:700;flex:1}.preset[data-active=true]{background:#e2f7f5;border-color:#58b3b2;color:#087c83}.control-note{border-radius:9px;background:#eff7f7;border:1px solid #d7e9e8;color:#4b7280;font-size:10px;line-height:1.55;padding:10px 11px;margin-top:12px}.linklike{color:#087c83;font-size:10px;font-weight:750;background:none;border:none;text-decoration:underline;text-underline-offset:2px;padding:0}.file-upload{display:none}.main{min-width:0}.hero{display:flex;align-items:start;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:5px 2px 16px}.eyebrow{font-size:10px;letter-spacing:.115em;font-weight:800;color:#087c83;margin:0 0 7px;text-transform:uppercase}.hero h2{font-size:clamp(21px,2.1vw,30px);font-weight:830;letter-spacing:-.032em;margin:0 0 7px;line-height:1.17}.hero p{font-size:12px;line-height:1.55;color:var(--muted);margin:0;max-width:810px}.hero .hero-badge{padding:8px 11px;border:1px solid #bfdadb;background:#e5f6f6;color:#107579;border-radius:9px;font-weight:800;font-size:10px;white-space:nowrap}.insight-banner{background:#143b48;color:#e9f8f9;border-radius:13px;padding:14px 19px;display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:14px}.insight-banner strong{font-size:15px;display:block;line-height:1.35}.insight-banner p{margin:4px 0 0;color:#b7d5d6;font-size:11px;line-height:1.48}.insight-tag{font-size:11px;padding:8px 11px;border-radius:8px;background:#245764;color:#c9f7f2;font-weight:780;white-space:nowrap}.graph-panel{padding:18px 19px 14px}.panel-top{display:flex;justify-content:space-between;align-items:start;gap:12px;flex-wrap:wrap}.panel-top h3{font-size:15px;margin:0 0 5px;letter-spacing:-.01em}.panel-top p{color:var(--muted);font-size:10px;line-height:1.45;margin:0}.legend{display:flex;gap:7px;flex-wrap:wrap;align-items:center}.legend-button{font-size:10px;display:flex;gap:7px;align-items:center;padding:7px 9px;border:1px solid var(--line);border-radius:7px;background:#fbfdfd;color:#405c6b;font-weight:740}.legend-button[aria-pressed=false]{opacity:.4}.legend-line{display:inline-block;width:17px;height:3px;border-radius:2px}.chart-wrap{margin-top:10px;width:100%;height:350px;position:relative}.chart-wrap svg{width:100%;height:100%;overflow:visible;touch-action:pan-y}.chart-tooltip{position:absolute;z-index:2;pointer-events:none;padding:9px 11px;border-radius:8px;background:rgba(16,43,57,.95);color:#f4f9fa;font-size:11px;line-height:1.5;white-space:pre-line;min-width:150px;max-width:230px;box-shadow:0 8px 24px #081d2470;display:none}.chart-tooltip b{color:#99e5dd}.chart-explain{font-size:10px;color:var(--muted);border-top:1px solid var(--line);padding-top:9px;margin-top:6px;display:flex;gap:15px;justify-content:space-between;flex-wrap:wrap}.trio{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin:14px 0}.scenario-card{background:#fff;border:1px solid #dfe7ea;border-top:4px solid var(--accent);border-radius:12px;padding:13px 14px;min-width:0;box-shadow:var(--shadow)}.scenario-card h4{margin:0 0 5px;color:#466474;font-size:11px}.scenario-card .number{font-size:23px;font-weight:850;letter-spacing:-.04em;line-height:1.15;font-variant-numeric:tabular-nums}.scenario-card .number span{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:0}.scenario-card p{font-size:10px;color:var(--muted);margin:7px 0 0;line-height:1.45}.scenario-card .danger{color:#b94760;font-weight:800}.scenario-card .good{color:#087c83;font-weight:800}.detail-panel{padding:17px 19px;margin-bottom:17px}.detail-top{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}.detail-panel h3{margin:0 0 4px;font-size:14px}.detail-panel p{font-size:10px;color:var(--muted);margin:0}.table-scroller{overflow:auto;max-width:100%;margin-top:13px}table{width:100%;border-collapse:collapse;font-size:11px;text-align:left;font-variant-numeric:tabular-nums}th{padding:10px 12px;background:#f3f7f8;text-transform:uppercase;letter-spacing:.055em;font-size:9px;color:#6c8592;white-space:nowrap}td{padding:10px 12px;border-bottom:1px solid #edf1f2;white-space:nowrap}td:last-child{white-space:normal}tbody tr:last-child td{border-bottom:none}tr.row-focus td{background:#e7f9f6}td b{color:var(--teal)}td .pill{font-size:9px;background:#edf7f7;color:#08747a;border-radius:100px;padding:4px 7px}.footnote{font-size:10px;color:#758d9b;line-height:1.55;padding:0 6px 8px}.footnote strong{color:#486878}.title-mini{font-size:10px;color:#e5f5f5;font-weight:800;letter-spacing:.05em}.fullscreen-tip{display:none}.details-actions{display:flex;gap:8px;align-items:center}.details-actions button{background:#f3f8f9;color:#476b76;font-size:10px;border:1px solid #d7e5e7;border-radius:7px;padding:7px 9px;font-weight:750}
-@media(max-width:1160px){.shell{grid-template-columns:268px minmax(0,1fr);gap:15px;width:calc(100% - 28px)}.topbar{padding:12px 15px}.trio{grid-template-columns:repeat(2,minmax(0,1fr))}.chart-wrap{height:350px}}
-@media(max-width:850px){.shell{grid-template-columns:1fr;width:calc(100% - 22px);margin-top:12px}.controls{position:static;max-height:none}.controls-inner{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 22px}.control-section{padding-right:5px}.hero h2{font-size:24px}.chart-wrap{height:330px}}
-@media(max-width:600px){.topbar{padding:11px}.brand h1{font-size:12px}.brand p{font-size:9px}.status{display:none}.controls-inner{grid-template-columns:1fr}.hero{padding-top:10px}.hero h2{font-size:23px}.insight-banner{flex-wrap:wrap}.chart-wrap{height:270px}.graph-panel{padding:14px 9px}.legend{gap:4px}.legend-button{font-size:9px;padding:6px}.trio{gap:7px}.scenario-card{padding:10px}.scenario-card .number{font-size:20px}.scenario-card h4{font-size:10px}.top-actions .button{font-size:10px;padding:8px 9px}}
-body.presentation .shell{grid-template-columns:1fr;width:min(1640px,calc(100% - 42px))}body.presentation .controls{display:none}body.presentation .chart-wrap{height:min(46vh,530px)}body.presentation .hero h2{font-size:32px}body.presentation .fullscreen-tip{display:inline}
-@media print{.topbar,.controls,.top-actions,.footnote,.details-actions{display:none!important}.shell{display:block;width:100%}.graph-panel{break-inside:avoid}.chart-wrap{height:400px}.trio{break-inside:avoid}body{background:#fff}}
-
-/* Prominent, directly editable next-dusk SOC target. This is a goal, not a field command. */
-.target-section{padding:16px 0 16px}
-.target-section .section-title{margin-bottom:10px}
-.target-section .section-title h3{color:#087c83}
-.target-box{padding:12px 13px 10px;border:1px solid #a9dcd9;border-radius:12px;background:#f0faf9}
-.target-edit{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.target-edit label{font-size:12px;line-height:1.4;font-weight:600;color:#254956;max-width:185px}
-.target-edit label strong{color:#076f78}
-.target-number-wrap{display:flex;align-items:center;border:1px solid #78bbb7;border-radius:9px;background:#fff;min-width:88px;padding-right:8px;color:#087c83;font-weight:750}
-.target-number-wrap input{width:61px;min-height:35px;border:0;background:transparent;text-align:right;padding:4px 5px;color:#096e76;font-size:21px;font-weight:800;font-variant-numeric:tabular-nums;outline-offset:2px}
-.target-number-wrap input:focus-visible{outline:2px solid #087c83;border-radius:6px}
-.target-number-wrap span{font-size:13px}
-.target-range{margin-top:12px!important;accent-color:#087c83!important}
-.target-scale{display:flex;align-items:center;justify-content:space-between;color:#63828e;font-size:10px;margin-top:2px}
-.target-scale b{color:#087c83;font-weight:850}
-.target-box p{font-size:10.5px;line-height:1.5;color:#54727d;margin:12px 0 0}
-@media(max-width:850px){.target-section{grid-column:1/-1}}
-
-.insight-banner{display:none}
-.lecture-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;background:#fff;border:1px solid #c8d9dd;border-left:5px solid #087c83;border-radius:10px;padding:10px 15px;margin:0 0 12px}
-.lecture-bar strong{font-size:16px}.lecture-bar p{margin:4px 0 0;color:#345364;font-size:14px}
-.lecture-weather{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.lecture-weather .preset-row{margin:0;display:flex}
-.lecture-weather .preset,.top-actions .button,.legend-button{font-size:14px;min-height:38px}
-.panel-top h3{font-size:20px}.panel-top p,.chart-explain,.scenario-card p{font-size:13px;color:#294c5d}
-.scenario-card h4{font-size:14px}.slider-head label,.section-title h3{font-size:14px}
-#chart text{font-size:13px;fill:#294c5d}
-body.presentation .chart-wrap{height:min(45vh,470px)}
-body.presentation .hero{padding-top:8px;padding-bottom:8px}
-body.presentation .topbar{padding-top:8px;padding-bottom:8px}
-@media (max-width:700px){#chart text{font-size:10px}.lecture-weather .preset,.top-actions .button,.legend-button{font-size:12px}}
-.brand h1{font-size:20px;line-height:1.12;letter-spacing:-.015em}
-.brand p{font-size:12px;line-height:1.3;margin:5px 0 0}
-.topbar,.top-actions{gap:8px}
-.top-actions .button{min-height:36px;font-size:12px;padding:7px 9px}
-.top-actions .button:disabled{opacity:.45;cursor:default}
-.top-actions #pauseBtn{min-width:76px}
-.top-actions select{min-height:36px;font:inherit;font-size:12px;padding:6px;color:#163e4b;background:#fff;border-radius:7px}
-.shell,body.presentation .shell{margin-top:12px}
-.decision{padding:11px 14px;margin-bottom:10px}
-.decision-top,.decision-metrics{display:flex;align-items:center;gap:10px;justify-content:space-between}
-.stages{flex:1;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:0;padding:0;list-style:none}
-.stages li{border-radius:6px;padding:6px 2px;text-align:center;background:#edf3f5;color:#38586a;font-weight:700;font-size:13px}
-.stages li[aria-current=step]{background:#087c83;color:white}
-.stages li.done{background:#dbefed;color:#0b6165;box-shadow:inset 0 -2px #58b3b2}
-.lecture-weather .preset{min-height:30px;padding:5px 9px;font-size:12px}
-.decision-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:8px 0}
-.kpi{min-width:0;display:flex;flex-direction:column;gap:2px;justify-content:center;padding:6px 11px;min-height:88px;border:1px solid #d6e6e8;border-radius:9px;background:#f4f8f9}
-.kpi span,.kpi small{font-size:13px;line-height:1.3;color:#345364}
-.kpi strong{font-size:clamp(30px,3.1vw,46px);line-height:1.05;font-variant-numeric:tabular-nums}
-.decision[data-stage=Predict] .kpi:not(:first-child) strong{color:#925522}
-.decision[data-stage=Decide] .kpi:not(:first-child) strong{color:#087c83}
-.decision-metrics{justify-content:flex-start;gap:8px 28px;flex-wrap:wrap;margin:6px 0;color:#345364;font-size:13px}
-.decision-metrics b{color:#102b39;padding-left:3px;font-variant-numeric:tabular-nums}
-.decision-explanation{display:grid;grid-template-columns:210px 1fr;align-items:center;gap:8px;background:#153b49;color:#f3fcfe;border-radius:8px;padding:6px 11px;height:57px;font-size:13px;line-height:1.35}
-.decision-explanation strong{color:#baf2ed}
-.graph-panel{padding:10px 14px 8px}
-.panel-top{gap:5px;align-items:center}
-.panel-top h3{font-size:16px;margin:0}
-.panel-top p{font-size:12px}
-.legend-button{font-size:12px;min-height:30px;padding:5px 7px}
-.chart-wrap,body.presentation .chart-wrap{height:255px;margin-top:5px}
-.chart-explain{padding-top:4px;font-size:11px}
-@media(min-width:1420px) and (min-height:820px){
- .chart-wrap,body.presentation .chart-wrap{height:390px}
-}
-@media(max-width:850px){
- .shell>.controls{grid-row:2}
- .topbar{align-items:flex-start;flex-wrap:wrap}
- .top-actions{justify-content:flex-start}
-}
-@media(max-width:600px){
- .decision{padding:8px}
- .decision-top{flex-wrap:wrap;gap:5px}
- .stages{flex-basis:100%}
- .stages li,.kpi span,.kpi small,.decision-metrics{font-size:11px}
- .kpi{min-height:98px;padding:5px;gap:3px;justify-content:space-between}
- .kpi span,.kpi small{min-height:2.6em}
- .kpi strong{font-size:28px}
- .decision-metrics{display:grid;grid-template-columns:1fr 1fr;min-height:47px}
- #lossMetric{grid-column:1/-1}
- .decision-explanation{grid-template-columns:1fr;gap:1px;align-content:center;height:101px;font-size:12px}
- .graph-panel{padding:8px}
-}
-
-/* Lecture theme. The rolling policy, timing and chart data are shared with the previous lecture build. */
-:root{--bg:#fff;--ink:#102b39;--shadow:0 2px 10px #102b3909}
-.topbar{background:#fff;color:var(--ink);box-shadow:none;border-bottom:3px solid #087c83}
-.brand p,.brand h1{color:var(--ink)}
-.logo{background:#ecf7f5;border-color:#93c8c5;color:#087c83}
-.top-actions .button{background:#fff;color:#163e4b;border-color:#c8dce0}
-.top-actions .button:hover{background:#edf7f5}
-.top-actions #playBtn{background:#087c83;color:#fff;border-color:#087c83}
-.kpi{background:#fff;border-color:#c7e3e1;border-top:3px solid #238c88}
-.kpi strong{color:#102b39}
-.decision-explanation{background:#edf7f5;color:#102b39;border-left:4px solid #087c83}
-.decision-explanation strong{color:#076565}
-.main.rolling .trio,.main.rolling .detail-panel{visibility:hidden}
+:root{color-scheme:light;--ink:#252134;--muted:#60596c;--line:#d9d2e2;--accent:#56328a;--paper:#f6f2fa;--white:#fff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--white);color:var(--ink);font:15px/1.45 system-ui,sans-serif}
+main{max-width:1200px;margin:auto;padding:clamp(14px,2vw,24px) clamp(14px,3vw,34px)}
+h1,h2,p{margin:0}
+h1{font:600 clamp(1.75rem,4.7vw,3.3rem)/1.08 Georgia,serif;letter-spacing:-.035em}
+h2{font-size:1.03rem}
+button,select,input{font:inherit;color:inherit}
+button,select{min-height:36px;padding:5px 11px;background:var(--white);border:1px solid var(--line);border-radius:5px}
+button,select,summary,input[type=range]{cursor:pointer}
+button:disabled{opacity:.55;cursor:default}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.chart-header{display:flex;align-items:flex-end;justify-content:space-between;gap:8px 18px;flex-wrap:wrap}
+.scope,.chart-key,.note{font-size:.83rem;color:var(--muted)}
+.chart-wrap{position:relative;height:clamp(240px,29vw,365px);margin:14px 0 0}
+#chart{width:100%;height:100%;display:block}
+.chart-footer,.toolbar,.weather{display:flex;align-items:center;flex-wrap:wrap;gap:6px 8px}
+.chart-footer{justify-content:space-between;gap:6px 18px;margin-top:4px}
+.legend{display:flex;flex-wrap:wrap;gap:4px 8px}
+.legend-button{display:inline-flex;align-items:center;gap:6px;border-color:transparent;font-size:.83rem;padding-inline:5px}
+.legend-button[aria-pressed=false]{opacity:.62;text-decoration:line-through}
+.legend-line{width:16px;height:3px;border-radius:6px}
+.chart-tooltip{position:absolute;display:none;pointer-events:none;background:var(--white);border:1px solid var(--line);padding:7px 10px;border-radius:5px;font-size:.8rem;z-index:1}
+.controls{margin:18px 0 0;padding:16px clamp(12px,2.5vw,24px);background:var(--paper);border-top:2px solid var(--accent)}
+.control-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.control-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 18px}
+.slider-field{min-width:0}
+.slider-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:.84rem}
+.slider-head b,.gain-row strong{white-space:nowrap;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;display:block;min-height:23px;margin:4px 0 0;accent-color:var(--accent)}
+.target-field{display:flex;align-items:center;gap:3px}
+#targetNumber{width:49px;padding:1px 2px;border:1px solid var(--line);border-radius:3px;background:var(--white)}
+.toolbar{margin:10px 0 0}
+#playBtn,.preset[aria-pressed=true]{background:var(--accent);color:var(--white);border-color:var(--accent)}
+.playback-status{min-height:2.8em;margin:8px 0 0;font-size:.85rem;color:var(--muted)}
+details{padding-top:7px;font-size:.87rem}
+summary{width:fit-content;text-decoration:underline;text-underline-offset:3px}
+details[open] summary{margin-bottom:8px}
+.gains{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px 18px;margin:12px 0}
+.gain-row{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:7px}
+.gain-row input{margin:0}
+.note{margin:10px 0}
+.presentation main{max-width:none}
+.presentation .chart-wrap{height:clamp(210px,30vw,380px)}
+.presentation .control-grid,.presentation details{display:none}
+@media(max-width:650px){.control-grid,.gains{grid-template-columns:repeat(2,minmax(0,1fr))}.controls{margin-top:12px}.chart-wrap{margin-top:8px}.chart-key{font-size:.76rem}}
+@media(max-width:365px){.control-grid,.gains{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<header class="topbar">
-  <div class="brand"><div><h1>Adaptive Energy Management Simulator</h1>
-  <p><b id="weatherName">Mixed</b> · Synthetic teaching example · <span id="nightCounter">6 nights</span></p></div></div>
-  <div class="top-actions">
-    <button class="button" id="playBtn">▶ Run nights</button>
-    <button class="button" id="pauseBtn" disabled>Pause</button>
-    <button class="button" id="nextBtn" disabled>Next stage</button>
-    <select id="playSpeed" aria-label="Playback speed"><option value="0.6">Slow</option><option value="1" selected>Normal</option><option value="1.65">Fast</option></select>
-    <button class="button" id="resetBtn">↺ Reset example</button>
-    <button class="button" id="csvBtn" title="Export the static comparison">⇩ CSV</button>
-    <button class="button" id="presentBtn">▣ Projector view</button>
+<main>
+ <section aria-labelledby="chart-title">
+  <div class="chart-header">
+   <h1 id="chart-title">Battery charge over time</h1>
+   <p class="scope">Synthetic simulation</p>
   </div>
-</header>
-<div class="shell">
- <aside class="panel controls" id="controls" aria-label="Interactive scenario parameters">
-  <div class="controls-header"><div><h2>Experiment controls</h2><div class="micro">Changes recalculate all 4 scenarios</div></div><span class="micro">1 simulated light</span></div>
-  <div class="controls-inner">
-   <section class="control-section target-section" aria-label="SOC target control">
-    <div class="section-title"><h3>night-start SOC target</h3><span>Adaptive only</span></div>
-    <div class="target-box">
-     <div class="target-edit"><label for="targetNumber">Aim for this SOC at the <strong>next night start</strong></label><div class="target-number-wrap"><input id="targetNumber" type="number" min="35" max="95" step="1" value="70" inputmode="numeric" aria-label="target at next night start, percent" /><span>%</span></div></div>
-     <input id="target" class="target-range" type="range" min="35" max="95" step="1" data-bind="target" aria-label="target next night-start SOC" />
-     <div class="target-scale"><span>35%</span><span><b id="targetValue">70%</b> target</span><span>95%</span></div>
-     
-    </div>
-   </section>
-   <section class="control-section">
-    <div class="section-title"><h3>Starting conditions</h3><span>Battery SOC</span></div>
-    <div class="slider-field"><div class="slider-head"><label for="initial">Initial night-start SOC</label><b id="initialValue"></b></div><input id="initial" type="range" min="20" max="100" step="1" data-bind="initial" /></div>
-    <div class="slider-field"><div class="slider-head"><label for="reserve">Protected reserve</label><b id="reserveValue"></b></div><input id="reserve" type="range" min="5" max="45" step="1" data-bind="reserve" /></div>
-    <div class="slider-field"><div class="slider-head"><label for="nights">Consecutive nights</label><b id="nightsValue"></b></div><input id="nights" type="range" min="3" max="7" step="1" data-bind="nights" /></div>
-   </section>
-   <section class="control-section">
-    <div class="section-title"><h3>Daylight recharge</h3><span>Varies every day</span></div>
-    <div id="gainInputs"></div>
-    <div class="control-note">These are <b>illustrative next-day battery gains</b> in percentage points (pp). The model uses them as both expected and realised gains. The forecast reduction control lets you plan for less. Actual weather-forecast skill is not being tested.</div>
-    <div style="margin-top:10px;display:flex;justify-content:space-between;gap:8px;align-items:center"><button type="button" class="linklike" id="importBtn">Use synthetic CSV of day gains</button><span class="micro" id="datasetTag">Synthetic mixed week</span></div>
-    <input type="file" id="csvInput" class="file-upload" accept=".csv,.txt,text/csv,text/plain" aria-label="Import day gain scenarios" />
-   </section>
-   <section class="control-section">
-    <div class="section-title"><h3>Adaptive strategy plan</h3><span>Recalculated every night</span></div>
-    <div class="slider-field"><div class="slider-head"><label for="minLoss">Minimum service loss / night</label><b id="minLossValue"></b></div><input id="minLoss" type="range" min="2" max="25" step="1" data-bind="minLoss" /></div>
-    <div class="slider-field"><div class="slider-head"><label for="maxLoss">Maximum allowed loss / night</label><b id="maxLossValue"></b></div><input id="maxLoss" type="range" min="12" max="50" step="1" data-bind="maxLoss" /></div>
-    <div class="slider-field"><div class="slider-head"><label for="guard">Reserve safety buffer</label><b id="guardValue"></b></div><input id="guard" type="range" min="0" max="15" step="1" data-bind="guard" /></div>
-    <div class="slider-field"><div class="slider-head"><label for="haircut">Forecast recharge reduction</label><b id="haircutValue"></b></div><input id="haircut" type="range" min="0" max="20" step="1" data-bind="haircut" /></div>
-    <div class="control-note"><b>Policy used:</b> each night, selects an SOC-loss budget to approach the next dusk target using the expected day gain, but is limited by brightness/service bounds and the reserve buffer. <strong>No brightness-to-SOC calibration is implied.</strong></div>
-   </section>
-   <section class="control-section">
-    <div class="section-title"><h3>Fixed plans</h3><span>SOC lost each night</span></div>
-    <div class="slider-field"><div class="slider-head"><label for="conservative"><span class="static-dot" style="background:var(--slate)"></span>Too conservative</label><b id="conservativeValue"></b></div><input id="conservative" type="range" min="2" max="38" step="1" data-bind="conservative" /></div>
-    <div class="slider-field"><div class="slider-head"><label for="normal"><span class="static-dot" style="background:var(--amber)"></span>Normal fixed plan</label><b id="normalValue"></b></div><input id="normal" type="range" min="2" max="45" step="1" data-bind="normal" /></div>
-    <div class="slider-field"><div class="slider-head"><label for="bold"><span class="static-dot" style="background:var(--red)"></span>Too aggressive</label><b id="boldValue"></b></div><input id="bold" type="range" min="2" max="55" step="1" data-bind="bold" /></div>
-   </section>
+  <div class="chart-wrap" id="chartWrap">
+   <svg id="chart" role="img" aria-label="Simulated battery state of charge by night and day for four lighting strategies"></svg>
+   <div class="chart-tooltip" id="tooltip" aria-hidden="true"></div>
   </div>
- </aside>
- <main class="main">
-  <section class="panel decision" aria-label="Rolling decision">
-    <div class="decision-top">
-      <ol class="stages" aria-label="Playback stages">
-        <li>Observe</li><li>Predict</li><li>Decide</li><li>Night</li><li>Day</li>
-      </ol>
-      <div class="lecture-weather" role="group" aria-label="Daylight recharge preset">
-        <div class="preset-row"><button type="button" class="preset" data-preset="mixed">Mixed</button><button type="button" class="preset" data-preset="cloudy">Cloudy</button><button type="button" class="preset" data-preset="sunny">Sunny</button></div>
-      </div>
-    </div>
-    <div class="decision-kpis">
-      <div class="kpi"><span>Night-start SOC</span><strong id="startKpi">—</strong><small id="reserveKpi">Reserve 20%</small></div>
-      <div class="kpi"><span>Predicted EON SOC</span><strong id="eonKpi">—</strong><small id="eonDetail">End of night</small></div>
-      <div class="kpi"><span>Predicted EOD SOC</span><strong id="eodKpi">—</strong><small id="eodDetail">End of day</small></div>
-    </div>
-    <div class="decision-metrics">
-      <span>Expected recharge <b id="expected">—</b></span>
-      <span>Next-dusk target <b id="nextTarget">70%</b></span>
-      <span id="lossMetric">Nightly loss budget <b id="nightLoss">—</b></span>
-    </div>
-    <div class="decision-explanation" aria-live="polite">
-      <strong id="decisionHeading">Static comparison</strong>
-      <span id="decisionText">Choose Run nights to follow each decision. The gains and battery outcomes are synthetic.</span>
-    </div>
-  </section>
-  <section class="panel graph-panel">
-   <div class="panel-top"><div><h3>Battery SOC across consecutive nights and days</h3><p>Dashed forecast · Solid simulated SOC</p></div><div class="legend" role="group" aria-label="Show or hide scenarios" id="legend"></div></div>
-   <div class="chart-wrap" id="chartWrap"><svg id="chart" role="img" aria-label="SOC trajectories for four nightly energy plans over several days"></svg><div class="chart-tooltip" id="tooltip"></div></div>
-   <div class="chart-explain"><span>Shaded blue = night · sand = charging day</span><span>Teal dashed = next-dusk SOC target · red dashed = reserve · 100% = charge saturation</span><span class="fullscreen-tip">Choose Edit parameters to return to all controls</span></div>
-  </section>
-  <section class="trio" id="scenarioCards" aria-label="Comparison of plan outcomes"></section>
-  <section class="panel detail-panel"><div class="detail-top"><div><h3>How changes its nightly SOC-loss budget</h3><p>During playback, cards and table summarise completed nights and days.</p></div><div class="details-actions"><button id="showMethod" type="button">▸ How decisions work</button></div></div><div class="table-scroller"><table><thead><tr><th>Night</th><th>Start SOC</th><th>Next day gain</th><th>chosen loss</th><th>End-of-night SOC</th><th>Next night-start SOC</th><th>Why this decision?</th></tr></thead><tbody id="nightRows"></tbody></table></div><div class="control-note" id="method" style="display:none;margin-top:10px">For each night: desired loss = current dusk SOC + max(0, predicted daylight gain − conservative haircut) − desired next-dusk SOC. The result is bounded by the minimum lighting-service loss, maximum adjustable loss and (current SOC − reserve − buffer). When the minimum service loss alone breaches reserve, the model flags an infeasible conflict rather than claiming a safe command. This demonstrates the <em>logic</em>, not a verified battery-energy or dimming model.</div></section>
-  <div class="footnote">Educational illustration of general principles. Synthetic SOC and recharge. Matching forecasts and outcomes reflect shared assumptions. SOC-loss budgets are not brightness percentages. No field measurements or physical control.</div>
- </main>
+  <div class="chart-footer">
+   <div class="legend" role="group" aria-label="Show or hide strategies" id="legend"></div>
+   <p class="chart-key">Solid: simulation · Dashed strategy line: forecast</p>
+  </div>
+ </section>
+ <section class="controls" aria-labelledby="controls-title">
+  <div class="control-header">
+   <h2 id="controls-title">Experiment controls</h2>
+   <div class="weather" role="group" aria-label="Daylight recharge preset">
+    <button type="button" class="preset" data-preset="mixed">Mixed</button>
+    <button type="button" class="preset" data-preset="cloudy">Cloudy</button>
+    <button type="button" class="preset" data-preset="sunny">Sunny</button>
+   </div>
+  </div>
+  <div class="control-grid">
+   <div class="slider-field">
+    <div class="slider-head"><label for="target">Next-night target</label><span class="target-field"><input id="targetNumber" type="number" min="35" max="95" step="1" inputmode="numeric" aria-label="Next-night target percentage">%</span></div>
+    <input id="target" type="range" min="35" max="95" step="1" data-bind="target">
+   </div>
+   <div class="slider-field"><div class="slider-head"><label for="initial">Initial night-start SOC</label><b id="initialValue"></b></div><input id="initial" type="range" min="20" max="100" step="1" data-bind="initial" /></div>
+<div class="slider-field"><div class="slider-head"><label for="reserve">Protected reserve</label><b id="reserveValue"></b></div><input id="reserve" type="range" min="5" max="45" step="1" data-bind="reserve" /></div>
+<div class="slider-field"><div class="slider-head"><label for="nights">Consecutive nights</label><b id="nightsValue"></b></div><input id="nights" type="range" min="3" max="7" step="1" data-bind="nights" /></div>
+  </div>
+  <div class="toolbar" role="group" aria-label="Playback">
+   <button type="button" id="playBtn">Run nights</button>
+   <button type="button" id="pauseBtn" disabled>Pause</button>
+   <button type="button" id="nextBtn" disabled>Next stage</button>
+   <select id="playSpeed" aria-label="Playback speed"><option value="0.6">Slow</option><option value="1" selected>Normal</option><option value="1.65">Fast</option></select>
+   <button type="button" id="resetBtn">Reset example</button>
+   <button type="button" id="presentBtn" aria-pressed="false">Projector view</button>
+  </div>
+  <p class="playback-status" id="playbackStatus" role="status"></p>
+  <details>
+   <summary>Advanced settings</summary>
+   <div class="control-grid">
+<div class="slider-field"><div class="slider-head"><label for="minLoss">Minimum service loss / night</label><b id="minLossValue"></b></div><input id="minLoss" type="range" min="2" max="25" step="1" data-bind="minLoss" /></div>
+<div class="slider-field"><div class="slider-head"><label for="maxLoss">Maximum allowed loss / night</label><b id="maxLossValue"></b></div><input id="maxLoss" type="range" min="12" max="50" step="1" data-bind="maxLoss" /></div>
+<div class="slider-field"><div class="slider-head"><label for="guard">Reserve safety buffer</label><b id="guardValue"></b></div><input id="guard" type="range" min="0" max="15" step="1" data-bind="guard" /></div>
+<div class="slider-field"><div class="slider-head"><label for="haircut">Forecast recharge reduction</label><b id="haircutValue"></b></div><input id="haircut" type="range" min="0" max="20" step="1" data-bind="haircut" /></div>
+<div class="slider-field"><div class="slider-head"><label for="conservative">Low fixed loss</label><b id="conservativeValue"></b></div><input id="conservative" type="range" min="2" max="38" step="1" data-bind="conservative" /></div>
+<div class="slider-field"><div class="slider-head"><label for="normal">Standard fixed loss</label><b id="normalValue"></b></div><input id="normal" type="range" min="2" max="45" step="1" data-bind="normal" /></div>
+<div class="slider-field"><div class="slider-head"><label for="bold">High fixed loss</label><b id="boldValue"></b></div><input id="bold" type="range" min="2" max="55" step="1" data-bind="bold" /></div>
 </div>
+   <div id="gainInputs" class="gains" role="group" aria-label="Synthetic daylight recharge"></div>
+   <div class="toolbar">
+    <button type="button" id="importBtn">Import synthetic gains</button>
+    <button type="button" id="csvBtn">Export comparison</button>
+   </div>
+   <input type="file" id="csvInput" accept=".csv,.txt,text/csv,text/plain" aria-label="Import synthetic gains" hidden>
+   <p class="note">The model uses synthetic daylight gains for both the forecast and simulation. Forecast reduction lowers only the forecast. Matching results follow from these assumptions. SOC loss is measured in percentage points (pp). It does not represent brightness.</p>
+  </details>
+ </section>
+</main>
 <script>
 (()=>{'use strict';
 const $=(s)=>document.querySelector(s);
-const colors={conservative:'#66809a',normal:'#c07a35',bold:'#bd4964',adaptive:'#087c83'};
-const labels={conservative:'Conservative fixed',normal:'Normal fixed',bold:'Aggressive fixed',adaptive:'Adaptive strategy'};
+const colors={conservative:'#525e72',normal:'#8e6409',bold:'#a44265',adaptive:'#6433a6'};
+const labels={conservative:'Low fixed',normal:'Standard fixed',bold:'High fixed',adaptive:'Adaptive'};
 const definitions={initial:68,reserve:20,nights:6,conservative:7,normal:19,bold:31,target:70,minLoss:7,maxLoss:32,guard:4,haircut:0,gains:[45,10,38,8,34,16],preset:'mixed'};
 let state=JSON.parse(JSON.stringify(definitions));
 let visible={conservative:true,normal:true,bold:true,adaptive:true};
 let lastResults=null;
-let currentDataset='Synthetic mixed week';
 const clamp=(x,a,b)=>Math.min(b,Math.max(a,x));
 const fmt=x=>Number.isFinite(x)?(Math.round(x*10)/10).toLocaleString('en-GB',{maximumFractionDigits:1}):'—';
 const pp=x=>fmt(x)+' pp';
@@ -291,15 +205,18 @@ function runPlan(key) {
   return summarize(entries);
 }
 function compare(){return Object.fromEntries(['conservative','normal','bold','adaptive'].map(key=>[key,runPlan(key)]));}
-function gainWeather(g){return g>=32?'SUNNY':g<=12?'LOW SUN':'MIXED';}
 function renderGainInputs(){
- $('#gainInputs').innerHTML=state.gains.slice(0,state.nights).map((g,i)=>`<div class="gain-row"><label for="gain-${i}">Day ${i+1}</label><input type="range" id="gain-${i}" min="0" max="55" step="1" data-gain="${i}" value="${g}" aria-label="Day ${i+1} forecast SOC gain"><strong id="gainValue-${i}">${g} pp</strong></div>`).join('');
+ $('#gainInputs').innerHTML=state.gains.slice(0,state.nights).map((g,i)=>`<div class="gain-row"><label for="gain-${i}">Day ${i+1}</label><input type="range" id="gain-${i}" min="0" max="55" step="1" data-gain="${i}" value="${g}" aria-label="Day ${i+1} synthetic SOC gain"><strong id="gainValue-${i}">${g} pp</strong></div>`).join('');
  document.querySelectorAll('[data-gain]').forEach(el=>el.addEventListener('input',ev=>{
   const index=Number(ev.target.dataset.gain);state.gains[index]=Number(ev.target.value);
-  state.preset='custom';currentDataset='Custom illustrative gains';updatePresetButtons();scenarioChanged();
+  state.preset='custom';updatePresetButtons();scenarioChanged();
  }));
 }
-function updatePresetButtons(){document.querySelectorAll('[data-preset]').forEach(el=>el.dataset.active=String(state.preset===el.dataset.preset));$('#datasetTag').textContent=currentDataset;}
+function updatePresetButtons() {
+ document.querySelectorAll('[data-preset]').forEach(el => {
+  el.setAttribute('aria-pressed', String(state.preset === el.dataset.preset));
+ });
+}
 function renderValues(){
  for(const id of ['initial','reserve','nights','conservative','normal','bold','target','minLoss','maxLoss','guard','haircut']){
   const el=document.getElementById(id);if(el&&document.activeElement!==el)el.value=state[id];
@@ -313,45 +230,28 @@ function renderLegend(){
  $('#legend').innerHTML=Object.keys(labels).map(k=>`<button type="button" class="legend-button" data-line="${k}" aria-pressed="${visible[k]}"><span class="legend-line" style="background:${colors[k]}"></span>${labels[k]}</button>`).join('');
  document.querySelectorAll('[data-line]').forEach(el=>el.addEventListener('click',()=>{const key=el.dataset.line;visible[key]=!visible[key];el.setAttribute('aria-pressed',String(visible[key]));renderChart(lastResults);}));
 }
-function renderCards(results){
- $('#scenarioCards').innerHTML=Object.keys(labels).map(k=>{
-  const r=results[k];
-  if (!r.entries.length) return `<div class="scenario-card" style="--accent:${colors[k]}"><h4>${labels[k]}</h4><div class="number">—</div><p>Summary starts after the first day.</p></div>`;
-  const risk=r.below>0?`<span class="danger">${r.below} reserve breach${r.below>1?'es':''}</span>`:`<span class="good">No reserve breaches</span>`;
-  const cliff=r.clipDays?`${r.clipDays} day${r.clipDays>1?'s':''} saturated · ${pp(r.clipTotal)} unused`:'No charge saturation';
-  return `<div class="scenario-card" style="--accent:${colors[k]}"><h4>${labels[k]}</h4><div class="number">${fmt(r.avg)} <span>pp / night avg.</span></div><p><b>Lowest dawn:</b> ${fmt(r.minDawn)}% &nbsp;·&nbsp; ${risk}</p><p><b>Daylight clipping:</b> ${cliff}</p></div>`;
- }).join('');
-
-}
-function renderRows(r){
- $('#nightRows').innerHTML=r.entries.map(e=>`<tr><td><b>N${e.night}</b></td><td>${fmt(e.start)}%</td><td>${pp(e.gain)} <span class="pill">${gainWeather(e.gain)}</span></td><td><b>${pp(e.loss)}</b></td><td>${fmt(e.dawn)}%</td><td>${fmt(e.dusk)}%</td><td>${e.reason}${e.clip>0?` · ${pp(e.clip)} clipped`:''}</td></tr>`).join('');
-}
 function renderChart(allResults){
  const {results, cutoff, forecast} = playView(allResults);
  const svg=$('#chart'),wrap=$('#chartWrap');const rect=wrap.getBoundingClientRect();
  const w=Math.max(300,Math.round(rect.width)),h=Math.max(230,Math.round(rect.height));
  svg.setAttribute('viewBox',`0 0 ${w} ${h}`);
- const l=44,r=17,t=33,b=36,ph=h-t-b,pw=w-l-r,n=state.nights;
+ const l=41,r=14,t=13,b=38,ph=h-t-b,pw=w-l-r,n=state.nights;
  const toX=v=>l+v/(2*n)*pw,toY=v=>t+(100-v)/100*ph;
  let content=`<defs><clipPath id="socClip"><rect x="${l}" y="${t}" width="${pw}" height="${ph}"/></clipPath></defs>`;
- for(let i=0;i<n;i++){
-  const nL=toX(i*2),nR=toX(i*2+1),dR=toX(i*2+2);
-  content+=`<rect x="${nL}" y="${t}" width="${nR-nL}" height="${ph}" fill="#eaf1f7" opacity=".8"/><rect x="${nR}" y="${t}" width="${dR-nR}" height="${ph}" fill="#fff5e7" opacity=".75"/>`;
-  content+=`<text x="${(nL+nR)/2}" y="${t-13}" font-size="${n>6?10:11}" fill="#547486" text-anchor="middle" font-weight="700">N${i+1}</text>`;
-  content+=`<text x="${(nR+dR)/2}" y="${t-13}" font-size="${n>6?9:10}" fill="#a77b41" text-anchor="middle">D${i+1}${w < 480 ? '' : !rolling ? ' · +' + fmt(state.gains[i]) : i <= rolling.night ? ' · +' + fmt(expectedGain(state.gains[i])) : ''}</text>`;
-  content+=`<line x1="${dR}" y1="${t}" x2="${dR}" y2="${t+ph}" stroke="#d8e1e7" stroke-width="1" opacity=".7"/>`;
- }
  for(let y=0;y<=100;y+=20){
-  const yy=toY(y);content+=`<line x1="${l}" y1="${yy}" x2="${l+pw}" y2="${yy}" stroke="#ccd9df" stroke-width="1" opacity="${y===100?'.7':'.56'}"/><text x="${l-8}" y="${yy+3.4}" font-size="10" text-anchor="end" fill="#6f8a98">${y}</text>`;
+  const yy=toY(y);
+  content+=`<line x1="${l}" y1="${yy}" x2="${l+pw}" y2="${yy}" stroke="#e5dfeb"/><text x="${l-7}" y="${yy+4}" font-size="11" text-anchor="end" fill="#60596c">${y}%</text>`;
  }
- let reserveY=toY(state.reserve);
-  const targetY=toY(state.target);
-  content+=`<line x1="${l}" y1="${targetY}" x2="${l+pw}" y2="${targetY}" stroke="#087c83" opacity=".54" stroke-width="1.5" stroke-dasharray="3 6"/>`;
-  content+=`<text x="${l+pw-6}" y="${Math.max(t+12,targetY-7)}" text-anchor="end" font-size="10" fill="#087c83" font-weight="800">NEXT-DUSK TARGET ${state.target}%</text>`;
-  content+=`<line x1="${l}" y1="${reserveY}" x2="${l+pw}" y2="${reserveY}" stroke="#c5536c" stroke-width="1.7" stroke-dasharray="6,5"/><text x="${l+pw-6}" y="${Math.max(t+10,reserveY-6)}" text-anchor="end" font-size="10" fill="#b5435c" font-weight="800">RESERVE ${state.reserve}%</text>`;
- content+=`<text x="${l-7}" y="${t-13}" text-anchor="end" font-size="10" fill="#547486" font-weight="800">SOC %</text>`;
- content+=`<text x="${l}" y="${h-9}" font-size="10" fill="#6f8a98">Starting SOC ${state.initial}%</text><text x="${l+pw}" y="${h-9}" text-anchor="end" font-size="10" fill="#6f8a98">After day ${n}</text>`;
- let markerParts='';
+ for(let i=0;i<n;i++){
+  const start=toX(i*2),mid=toX(i*2+1),end=toX(i*2+2);
+  const night=w<560?'N':'Night ',day=w<560?'D':'Day ';
+  content+=`<line x1="${start}" x2="${start}" y1="${t}" y2="${t+ph+4}" stroke="#e5dfeb"/><text x="${(start+mid)/2}" y="${t+ph+19}" font-size="11" fill="#60596c" text-anchor="middle">${night}${i+1}</text><text x="${(mid+end)/2}" y="${t+ph+19}" font-size="11" fill="#60596c" text-anchor="middle">${day}${i+1}</text>`;
+ }
+ for(const [label,value,color] of [['Target',state.target,'#72578e'],['Reserve',state.reserve,'#a34758']]){
+  const y=toY(value);
+  content+=`<line x1="${l}" x2="${l+pw}" y1="${y}" y2="${y}" stroke="${color}" stroke-dasharray="2 5"/><text x="${l+pw-2}" y="${y-5}" font-size="11" text-anchor="end" fill="${color}" stroke="#fff" stroke-width="3" paint-order="stroke">${label} ${value}%</text>`;
+ }
+ content+=`<circle cx="${l}" cy="${toY(state.initial)}" r="3" fill="#252134"/>`;
  const toPath = points => points.map((point, i) =>
    (i === 0 ? 'M' : 'L') + toX(point.x).toFixed(1) + ' ' + toY(point.y).toFixed(1)).join(' ');
  if (forecast && visible.adaptive) {
@@ -362,17 +262,9 @@ function renderChart(allResults){
   if(!visible[key])continue;
   const res=results[key];
   content+=`<path data-series="${key}" data-through="${res.points.at(-1).x}" clip-path="url(#socClip)" d="${toPath(res.points)}" fill="none" stroke="${colors[key]}" stroke-width="${key==='adaptive'?3.6:2.6}" stroke-linecap="round" stroke-linejoin="round" opacity="${key==='conservative'?'.9':'1'}"/>`;
-  for(const p of res.points){
-   if(!p.type)continue;
-   if(p.type==='midday'&&key!=='adaptive'&&p.y!==100)continue;
-   if(p.type==='midday'&&key==='adaptive')continue;
-   const rr=p.type==='dusk'?3.7:2.7;
-   markerParts+=`<circle cx="${toX(p.x)}" cy="${toY(p.y)}" r="${rr}" fill="${colors[key]}" stroke="#fff" stroke-width="${p.type==='dusk'?'1.5':'1'}" opacity=".97"/>`;
-  }
  }
  // crosshair and user pointer targets on every checkpoint; do not alter data
  content+=`<g id="crosshair" style="display:none"><line id="crossX" x1="0" x2="0" y1="${t}" y2="${t+ph}" stroke="#4f7284" stroke-width="1.2" stroke-dasharray="3 4"/></g>`;
- content+=`<g clip-path="url(#socClip)">${markerParts}</g>`;
  content+=`<rect id="chartHit" x="${l}" y="${t}" width="${pw}" height="${ph}" fill="transparent" style="cursor:crosshair"/>`;
  svg.innerHTML=content;
  const tip=$('#tooltip'),hit=$('#chartHit'),cross=$('#crosshair'),crossX=$('#crossX');
@@ -381,13 +273,13 @@ function renderChart(allResults){
  const availableMarks = marks.filter(mark => mark.x <= cutoff);
  hit.addEventListener('pointermove',ev=>{
   const box=svg.getBoundingClientRect();const svgX=(ev.clientX-box.left)*w/box.width;
-  if (rolling && !rolling.paused) return;
+  if (!availableMarks.length || (rolling && !rolling.paused)) return;
   const selected=availableMarks.reduce((best,m)=>Math.abs(toX(m.x)-svgX)<Math.abs(toX(best.x)-svgX)?m:best,availableMarks[0]);
   cross.style.display='';crossX.setAttribute('x1',toX(selected.x));crossX.setAttribute('x2',toX(selected.x));
   let lines=[`<b>${selected.label}</b>`];
   for(const key of ['adaptive','conservative','normal','bold']){if(!visible[key])continue;
    const p=results[key].points.find(x=>x.x===selected.x);
-   if(p)lines.push(`<span style="color:${colors[key]==='#66809a'?'#bcd5e7':colors[key]};font-weight:700">${labels[key]}</span>  ${fmt(p.y)}%`);
+   if(p)lines.push(`<span style="color:${colors[key]};font-weight:700">${labels[key]}</span>  ${fmt(p.y)}%`);
   }
   tip.innerHTML=lines.join('<br>');tip.style.display='block';
   const x=clamp(ev.clientX-wrap.getBoundingClientRect().left+14,4,wrap.clientWidth-200);
@@ -401,11 +293,8 @@ function render(){
  if(state.maxLoss<state.minLoss)state.maxLoss=state.minLoss;
  if(state.initial<state.reserve)state.initial=state.reserve;
  if (!rolling) lastResults=compare();
- const summaries = rolling ? Object.fromEntries(strategyKeys.map(key => [key, summarize(rolling.history[key])])) : lastResults;
  renderValues();
  for (const control of document.querySelectorAll('[data-line]')) control.setAttribute('aria-pressed', String(visible[control.dataset.line]));
- renderCards(summaries);
- renderRows(summaries.adaptive);
  redrawPlayback();
 }
 function setPreset(preset){
@@ -413,7 +302,6 @@ function setPreset(preset){
  if(!seq)return;
  state.gains=seq.slice();
  state.preset=preset;
- currentDataset='Synthetic '+(preset==='mixed'?'mixed week':preset==='cloudy'?'cloudy stretch':'high-sun stretch');
  renderGainInputs();
  updatePresetButtons();
  scenarioChanged();
@@ -421,7 +309,6 @@ function setPreset(preset){
 function reset(){
  state=JSON.parse(JSON.stringify(definitions));
  visible={conservative:true,normal:true,bold:true,adaptive:true};
- currentDataset='Synthetic mixed week';
  $('#playSpeed').value='1';
  renderGainInputs();
  updatePresetButtons();
@@ -430,7 +317,6 @@ function reset(){
 const stages = ['Observe', 'Predict', 'Decide', 'Night', 'Day'];
 const durations = [2000, 2000, 3000, 2000, 2000];
 const strategyKeys = Object.keys(labels);
-const stageItems = [...document.querySelectorAll('.stages li')];
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
 let rolling = null;
 let frameId = null;
@@ -520,79 +406,37 @@ function targetText(dusk) {
   return gap > 0 ? 'Target exceeded by ' + pp(gap) : 'Target missed by ' + pp(-gap);
 }
 
-function setText(id, value) {
-  const element = document.getElementById(id);
-  if (element.textContent !== value) element.textContent = value;
-}
-
 function renderDecision() {
-  $('.main').classList.toggle('rolling', Boolean(rolling));
-  const stage = rolling?.stage ?? -1;
-  const round = rolling?.round;
-  const forecast = round?.prediction ?? round?.candidate;
-  const outcome = round?.outcomes?.adaptive;
-  const progress = motionProgress();
-  const showDawn = stage === 4 || (stage === 3 && progress === 1);
-  const showDusk = stage === 4 && progress === 1;
-  const selected = state.preset[0].toUpperCase() + state.preset.slice(1);
-  $('#weatherName').textContent = selected;
-  $('#nightCounter').textContent = rolling ? `Night ${rolling.night + 1} of ${state.nights}` :
-    finished ? `${state.nights} nights complete` : `${state.nights} nights · Static comparison`;
-  $('.decision').dataset.stage = stages[stage] ?? 'Static';
-  stageItems.forEach((item, index) => {
-    item.classList.toggle('done', index < stage || finished);
-    if (index === stage) item.setAttribute('aria-current', 'step');
-    else item.removeAttribute('aria-current');
-  });
-  const fields = {
-    startKpi: displaySoc(round?.starts.adaptive ?? state.initial),
-    reserveKpi: `Reserve ${state.reserve}%`,
-    eonKpi: displaySoc(forecast?.dawn),
-    eodKpi: displaySoc(forecast?.dusk),
-    eonDetail: showDawn ? 'Simulated EON ' + displaySoc(outcome.dawn) : 'End of night',
-    eodDetail: showDusk ? 'Simulated EOD ' + displaySoc(outcome.dusk) : 'End of day',
-    expected: round ? signed(round.expected) : '—',
-    nextTarget: displaySoc(state.target),
-    nightLoss: stage === 1 ? pp(state.normal) : round?.choice ? pp(round.choice.loss) : '—'
-  };
-  for (const [id, value] of Object.entries(fields)) setText(id, value);
-
-  let heading = finished ? 'Rolling run complete' : 'Static comparison';
-  let explanation = finished ? 'The graph and cards now show the full comparison.' :
-    'Run nights to see each decision. The gains and battery outcomes are synthetic.';
-  if (stage === 0) {
-    heading = 'Observe the current battery';
-    explanation = 'Use the current SOC, expected recharge and reserve to plan this night.';
-  } else if (stage === 1) {
-    heading = 'Candidate normal fixed plan';
-    explanation = 'Apply the fixed loss to the simulated battery. The dashed line uses the expected recharge.';
-  } else if (stage === 2) {
-    heading = round.choice.conflict ? 'Minimum service vs reserve' : 'Adaptive prediction';
-    explanation = round.choice.conflict
-      ? 'Minimum lighting would use the reserve or its buffer. ' + targetText(forecast.dusk) + ' in the forecast.'
-      : `EON ${displaySoc(round.candidate.dawn)} → ${displaySoc(forecast.dawn)}, EOD ${displaySoc(round.candidate.dusk)} → ${displaySoc(forecast.dusk)}. ${round.choice.reason}. ${targetText(forecast.dusk)} in the forecast.`;
-  } else if (stage === 3) {
-    heading = 'Simulated overnight discharge';
-    explanation = showDawn
-      ? `Dawn ${displaySoc(outcome.dawn)} matches the conditional EON prediction under the assumed loss.${outcome.dawn < state.reserve - 0.0001 ? ' The battery breached the reserve.' : ''}`
-      : 'Each solid line reveals the battery discharge under that strategy. The prediction cards stay fixed.';
-  } else if (stage === 4) {
-    heading = 'Simulated daytime recharge';
-    if (showDusk) {
-      const delta = outcome.dusk - forecast.dusk;
-      const comparison = Math.abs(delta) < 1e-6 ? 'matches forecast' : signed(delta) + ' vs forecast';
-      const reason = outcome.gain !== round.expected ? 'The forecast used reduced recharge.' : round.choice.reason + '.';
-      explanation = `Simulated dusk ${displaySoc(outcome.dusk)} (${comparison}). ${targetText(outcome.dusk)}. ${reason} This becomes the next starting SOC.`;
-    } else {
-      explanation = `The battery receives ${signed(outcome.gain)} of assumed recharge, capped at 100% SOC.`;
-    }
+ const stage = rolling?.stage ?? -1;
+ const round = rolling?.round;
+ const forecast = round?.prediction ?? round?.candidate;
+ const outcome = round?.outcomes?.adaptive;
+ const progress = motionProgress();
+ const status = $('#playbackStatus');
+ let message = finished ? 'Playback complete.' : '';
+ if (stage === 0) {
+  message = `Start ${displaySoc(round.starts.adaptive)} · Expected recharge ${signed(round.expected)} · Reserve ${state.reserve}%`;
+ } else if (stage === 1) {
+  message = `Standard fixed plan (${pp(state.normal)} loss) · Forecast dawn ${displaySoc(forecast.dawn)}, dusk ${displaySoc(forecast.dusk)}`;
+ } else if (stage === 2) {
+  const reason = round.choice.conflict ? 'Minimum service conflicts with the reserve' : round.choice.reason;
+  message = `Adaptive plan (${pp(round.choice.loss)} loss) · Forecast dawn ${displaySoc(forecast.dawn)}, dusk ${displaySoc(forecast.dusk)}. ${reason}. ${targetText(forecast.dusk)} in forecast.`;
+ } else if (stage === 3) {
+  message = `Forecast dawn ${displaySoc(forecast.dawn)}`;
+  if (progress === 1) {
+   message += ` · Simulated dawn ${displaySoc(outcome.dawn)}`;
+   if (outcome.dawn < state.reserve - 0.0001) message += ' · Below reserve';
   }
-  setText('decisionHeading', heading);
-  setText('decisionText', explanation);
-  $('#pauseBtn').disabled = !rolling;
-  $('#pauseBtn').textContent = rolling?.paused ? 'Resume' : 'Pause';
-  $('#nextBtn').disabled = !rolling;
-  $('#csvBtn').disabled = Boolean(rolling);
+ } else if (stage === 4) {
+  message = `Forecast dusk ${displaySoc(forecast.dusk)}`;
+  if (progress === 1) message += ` · Simulated dusk ${displaySoc(outcome.dusk)} · ${targetText(outcome.dusk)}`;
+ }
+ const text = rolling ? `Night ${rolling.night + 1} of ${state.nights} · ${stages[stage]} · ${message}` : message;
+ if (status.textContent !== text) status.textContent = text;
+ $('#pauseBtn').disabled = !rolling;
+ $('#pauseBtn').textContent = rolling?.paused ? 'Resume' : 'Pause';
+ $('#nextBtn').disabled = !rolling;
+ $('#csvBtn').disabled = Boolean(rolling);
 }
 
 function redrawPlayback() {
@@ -709,8 +553,12 @@ $('#playBtn').addEventListener('click',beginPlay);
 $('#pauseBtn').addEventListener('click',togglePause);
 $('#nextBtn').addEventListener('click',nextStage);
 $('#resetBtn').addEventListener('click',reset);
-$('#presentBtn').addEventListener('click',()=>{document.body.classList.toggle('presentation');$('#presentBtn').textContent=document.body.classList.contains('presentation')?'☷ Edit parameters':'▣ Projector view';requestAnimationFrame(() => renderChart(lastResults));});
-$('#showMethod').addEventListener('click',()=>{const el=$('#method');const show=el.style.display==='none';el.style.display=show?'block':'none';$('#showMethod').textContent=show?'▾ Hide method':'▸ How decisions work';});
+$('#presentBtn').addEventListener('click',()=>{
+ const enabled = document.body.classList.toggle('presentation');
+ $('#presentBtn').setAttribute('aria-pressed', String(enabled));
+ $('#presentBtn').textContent = enabled ? 'Edit parameters' : 'Projector view';
+ requestAnimationFrame(() => renderChart(lastResults));
+});
 $('#importBtn').addEventListener('click',()=>$('#csvInput').click());
 $('#csvInput').addEventListener('change',async ev=>{
  const file=ev.target.files?.[0];if(!file)return;
@@ -724,7 +572,7 @@ $('#csvInput').addEventListener('change',async ev=>{
    if(Number.isFinite(cand)&&cand>=0&&cand<=55)numbers.push(cand);
   }
   if(numbers.length<3)throw Error('Provide at least three day gain values between 0 and 55 SOC percentage points.');
-  state.nights=clamp(numbers.length,3,7);state.gains=numbers.slice(0,7);state.preset='custom';currentDataset='Imported day-gain inputs · not verified forecasts';
+  state.nights=clamp(numbers.length,3,7);state.gains=numbers.slice(0,7);state.preset='custom';
   renderGainInputs();updatePresetButtons();scenarioChanged();
   alert('Loaded '+state.nights+' day-gain inputs. These are scenario inputs only, not as-issued weather forecasts or evidence of field benefit.');
  }catch(err){alert('Could not import: '+err.message);}ev.target.value='';

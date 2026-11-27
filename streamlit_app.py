@@ -1,6 +1,5 @@
 """Reliable AI Lab — a synthetic, offline-capable teaching app."""
 from datetime import time, timedelta
-from base64 import b64encode
 from pathlib import Path
 import streamlit as st
 from lab_models import PRESETS, Scenario, clock, eligible, plan_energy, reconstruction_example
@@ -12,22 +11,14 @@ st.html("""<style>
 .stApp {font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;}
 .block-container {max-width:1250px; padding-top:2rem; padding-bottom:2rem;}
 h1,h2,h3 {letter-spacing:-0.035em;} h1 {font-size:clamp(2.2rem,4vw,3.4rem)!important;}
-.eyebrow {font-size:.75rem;letter-spacing:.16em;font-weight:750;color:#087f8c;text-transform:uppercase;margin-bottom:12px;}
-.hero {border-top:5px solid #087f8c;padding:23px 0 20px;}
-.hero h1 {margin:0 0 8px;line-height:1.08;} .hero p {margin:8px 0;font-size:1.06rem;}
-.muted {color:#526573;} .badge {display:inline-block;border-radius:6px;background:#e0efed;color:#12636b;padding:5px 9px;font-size:.73rem;font-weight:750;letter-spacing:.07em;text-transform:uppercase;}
 .status {border-radius:12px;padding:17px 20px;margin:8px 0 14px;border:1px solid #9acbc6;background:#e7f4ef;}
 .status h3 {font-size:1.25rem;margin:0 0 5px;} .status p {margin:0;line-height:1.5;}
 .status.warn {border-color:#dbba7a;background:#fff3d9;} .status.bad {border-color:#df9ca2;background:#ffedec;}
-.lamp-scene {background:#132d43;border-radius:12px;color:#fff;display:flex;align-items:center;gap:10px;padding:8px 20px;margin-bottom:12px;}
-.lamp-scene img {width:110px;height:120px;flex:0 0 110px;}
-.lamp-scene strong {font-size:1.7rem;} .lamp-scene p {margin:2px 0;color:#d2e0eb;font-size:.85rem;}
 .verdict {border-radius:12px;padding:15px 18px;background:#fff;border:1px solid #d7e0de;}
 .verdict strong {font-size:1.6rem;display:block;} .verdict p {margin:0;font-size:.88rem;}
-.takeaway {border-left:4px solid #087f8c;padding:10px 16px;background:#edf3f1;font-size:1.05rem;line-height:1.5;margin:14px 0;}
 [data-testid="stMetricValue"] {font-size:1.7rem;}
 [data-testid="stSlider"] {padding-bottom:6px;} a {text-underline-offset:3px;}
-@media(max-width:640px){.block-container{padding:1rem 1rem 2rem;}.hero{padding:16px 0}.lamp-scene strong{font-size:1.45rem;}h2{font-size:1.65rem!important;}}
+@media(max-width:640px){.block-container{padding:1rem 1rem 2rem;}h2{font-size:1.65rem!important;}}
 </style>""")
 
 
@@ -47,13 +38,8 @@ if "energy" not in st.session_state:
 if "observation" not in st.session_state:
     reset_evidence()
 
-st.html("""<div class="hero"><div class="eyebrow">Birmingham City University · 30 November 2026 · Interactive research</div>
-<h1>Reliable AI Lab<span style="color:#087f8c">.</span></h1>
-<p><strong>Using AI to Support Engineering</strong></p>
-<p class="muted">Salaheddine Chouikh &nbsp;·&nbsp; Two presenter-led labs for the BCU guest lecture</p></div>""")
+st.title("Reliable AI Lab")
 app_dir = Path(__file__).resolve().parent
-links = "[Published SETA paper ↗](https://doi.org/10.1016/j.seta.2026.105315)"
-st.caption("Follow the evidence available at forecast time, then see how energy limits shape an engineering decision.")
 
 PREDICTIONS = "01 — From Data to Reliable Predictions"
 DECISIONS = "02 — From Predictions to Decisions"
@@ -68,21 +54,13 @@ if lab == PREDICTIONS:
     part = st.segmented_control("Choose a part of Lab 1", (EVIDENCE, ENERGY),
                                default=EVIDENCE, required=True, wrap=True,
                                key="prediction_part", persist_state="page")
-    if part == ENERGY:
-        st.caption("Once we know which inputs are available, we can ask what the battery can physically deliver.")
-    else:
-        st.caption("Start with the timestamp of a sensor reading and the moment it became available.")
 
 if lab == DECISIONS:
-    st.caption("A synthetic teaching model for general engineering principles. The example has no connection to industrial systems.")
     st.iframe(app_dir / "assets" / "Adaptive_Energy_Management_Simulator.html",
               alt="Interactive solar streetlight battery and lighting simulator")
 
 elif part == EVIDENCE:
-    st.html('<span class="badge">Synthetic timeline · no industrial observations</span>')
-    st.caption("This synthetic example illustrates a separate investigation into information availability. The SETA paper studies battery runtime and dimming.")
-    st.subheader("Could the model have used this observation?")
-    st.write("The sensor says it happened before the forecast. But when did the system receive it?")
+    st.caption("Synthetic example · compares observation and receipt times at the forecast cutoff.")
     a, b, c = st.columns(3)
     for col, label, key in [(a, "Observation time", "observation"), (b, "Forecast issue / cutoff", "cutoff"),
                             (c, "Actual receipt time", "receipt")]:
@@ -91,7 +69,7 @@ elif part == EVIDENCE:
     obs, cut, rec = [st.session_state[k].hour * 60 + st.session_state[k].minute
                      for k in ("observation", "cutoff", "receipt")]
     st.altair_chart(event_timeline(obs, cut, rec), width="stretch", theme=None)
-    st.caption("Synthetic example · all times share one date and clock. At the exact cutoff, the record counts as available.")
+    st.caption("All times use one clock and date. A record received at the cutoff is available.")
     if rec < obs:
         st.warning("Receipt is earlier than observation. That is inconsistent for a single sensor event on a shared clock. "
                    "The timestamp comparisons below still apply, but this is not a physically consistent event history. "
@@ -115,13 +93,9 @@ elif part == EVIDENCE:
             st.success("The rules agree: both timestamps pass the cutoff. Availability alone does not prove quality or usefulness.")
         else:
             st.info("The rules agree: neither timestamp passes the cutoff.")
-    else:
-        st.info("Make your prediction, then reveal the verdict. Move the cutoff or receipt time and try again.")
-    st.html('<div class="takeaway"><strong>The lesson:</strong> Happening earlier does not mean being available earlier. '
-            'A forecast must be evaluated using evidence available at its issue time.</div>')
 
-    with st.expander("Optional · how later data can change an error score"):
-        st.caption("ANOTHER SYNTHETIC EXAMPLE · invented input values, forecast and outcome")
+    with st.expander("How later data changes an error score"):
+        st.caption("Synthetic inputs, forecast and outcome")
         st.toggle("Use the later reconstructed input", key="later", persist_state="page")
         toy = reconstruction_example(st.session_state.later)
         st.markdown(f"**{toy.label}** · The toy rule always predicts a 10 percentage-point SOC drop.")
@@ -135,13 +109,8 @@ elif part == EVIDENCE:
                    "This is a different retrospective forecast—not a correction to what the model originally issued. "
                    "Reconstruction need not improve a score; this example was chosen to expose that possibility.")
 
-    st.info("Next, use the battery energy feasibility part to see how a reliable forecast still has to respect an energy budget.")
-
 elif part == ENERGY:
-    st.html('<span class="badge">Synthetic educational simulation</span>')
-    st.caption("Educational energy model inspired by the published SETA battery-runtime and dimming study. The controls below use synthetic values.")
-    st.subheader("Can you keep this light on until dawn?")
-    st.write("Start with a scenario. Then change the energy or reserve and watch the night change.")
+    st.caption("Synthetic simulation inspired by the published SETA battery-runtime and dimming study.")
     buttons = st.columns([1, 1, 1, 1])
     for column, name in zip(buttons, PRESETS):
         column.button(name, on_click=set_energy, args=(name,), width="stretch")
@@ -160,7 +129,7 @@ elif part == ENERGY:
         plan = plan_energy(scenario, 80 if st.session_state.extra else scenario.minimum_pct)
         st.caption(f"Required floor: **{scenario.minimum_pct:.0f}%** all night. "
                    f"Desired target: **{plan.desired_pct:.0f}%**. Extra brightness is optional.")
-        st.caption("Toy lamp: 40 W at 100% brightness. No overnight charging. Night begins at hour 0.")
+        st.caption("Lamp model: 40 W at 100% brightness. No overnight charging. Night begins at hour 0.")
 
     with visual:
         if plan.feasible:
@@ -172,21 +141,10 @@ elif part == ENERGY:
             message = (f"The minimum could fit without this reserve. With it, {plan.unmet_h:.2f} hours "
                        f"are unserved: a {plan.planning_gap_wh:.0f} Wh planning shortfall.")
         else:
-            kind, title = "bad", "Not enough energy—even at the minimum"
+            kind, title = "bad", "Insufficient energy at minimum brightness"
             message = (f"Even with no reserve, the floor needs {plan.physical_gap_wh:.0f} Wh more. "
                        f"This reserve-aware plan leaves {plan.unmet_h:.2f} hours unserved.")
         st.html(f'<div class="status {kind}"><h3>{title}</h3><p>{message}</p></div>')
-        lamp_svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 120">
-        <circle cx="85" cy="20" r="10" fill="#f2e5ab"/><circle cx="90" cy="16" r="10" fill="#132d43"/>
-        <path d="M14 15h31l-5 12H10Z" fill="#487792" stroke="#a8c4d5"/><path d="M27 27v77M27 40h33" stroke="#bed3dc" stroke-width="4"/>
-        <path d="M50 42h20l20 58H31Z" fill="#f7d873" opacity="{0.06 + plan.brightness_pct / 400:.3f}"/>
-        <rect x="49" y="37" width="24" height="7" rx="3" fill="#ffe6a0"/><path d="M8 105h92" stroke="#78939e"/>
-        <rect x="18" y="76" width="18" height="17" rx="3" fill="#87c3b9"/></svg>'''
-        lamp_src = "data:image/svg+xml;base64," + b64encode(lamp_svg.encode()).decode()
-        st.html(f'''<div class="lamp-scene"><img src="{lamp_src}" width="110" height="120"
-        alt="Synthetic illustration of a solar streetlight at night"/>
-        <div><strong>{plan.service_h:.2f} / {scenario.night_h:.0f} hours</strong><p>Simulated service at or above the floor</p>
-        <p>Nightfall → {'Dawn' if plan.feasible else 'Budget exhausted → unserved night'}</p></div></div>''')
         metrics = st.columns(3)
         metrics[0].metric("Minimum needs", f"{plan.floor_wh:.0f} Wh")
         metrics[1].metric("Usable after reserve", f"{plan.budget_wh:.0f} Wh")
@@ -199,8 +157,6 @@ elif part == ENERGY:
         if not plan.feasible:
             st.error(f"Service failure is explicit: the lamp switches off after {plan.service_h:.2f} hours. "
                      "The red interval fails the required minimum; it is not a valid all-night lighting plan.")
-    st.html('<div class="takeaway"><strong>The lesson:</strong> A better prediction cannot create missing energy. '
-            'A trustworthy system must recognise when the required service is infeasible.</div>')
     with st.expander("How this simulation works · assumptions & research limits"):
         st.markdown("**Minimum energy (Wh) = 40 W × minimum brightness / 100 × night hours.**\n\n"
                     "Usable energy = starting energy × (1 − reserve / 100). If that covers the minimum, "
@@ -213,15 +169,4 @@ elif part == ENERGY:
                     "NASA laboratory battery discharge data and simulation-based evaluation, with its own "
                     "experimental horizons. These invented night lengths and energy values are not published "
                     "numerical results, a field-validated controller, or measured real-world energy savings.")
-
-st.divider()
-st.markdown(links, unsafe_allow_html=True)
-st.caption("SETA research by Salaheddine Chouikh, Nouh Elmitwally and Faisal Saeed. "
-           "Independent educational application · synthetic exercises · no live infrastructure connection.")
-with st.expander("Presenter quick guide & offline backup"):
-    st.markdown("**Lab 1:** Reveal the verdict for a late reading. Move receipt to the forecast "
-                "cutoff. Then open Battery energy feasibility, choose Close call and raise the reserve.\n\n"
-                "**Lab 2:** Open Projector view and Run nights on Mixed. Pause and use Next stage "
-                "to show the candidate, adaptive forecast and simulated outcome.\n\n"
-                "**Offline:** Install the dependencies and run the lab locally. The standalone energy management "
-                "HTML and the screenshots can also be opened directly.")
+        st.markdown("[Published SETA paper](https://doi.org/10.1016/j.seta.2026.105315)")
