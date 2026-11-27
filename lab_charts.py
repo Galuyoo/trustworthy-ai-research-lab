@@ -11,14 +11,14 @@ GOLD = "#b46b0c"
 NAVY = "#010f4e"
 
 
-def style(chart):
+def style(chart, projector):
     return (chart.configure_view(strokeWidth=0)
-            .configure_axis(labelFontSize=13, titleFontSize=13, gridColor="#e3e9f1",
+            .configure_axis(labelFontSize=16 if projector else 13, titleFontSize=16 if projector else 13, gridColor="#e3e9f1",
                             titleColor=NAVY, labelColor=NAVY)
-            .configure_legend(labelFontSize=12, title=None, orient="bottom"))
+            .configure_legend(labelFontSize=15 if projector else 12, title=None, orient="bottom"))
 
 
-def energy_charts(plan: EnergyPlan):
+def energy_charts(plan: EnergyPlan, *, projector=False):
     h = plan.scenario.night_h
     x = alt.X("hour:Q", title="Hours since nightfall", scale=alt.Scale(domain=[0, h]),
               axis=alt.Axis(tickCount=6))
@@ -44,7 +44,7 @@ def energy_charts(plan: EnergyPlan):
         gap = alt.Chart(alt.Data(values=[{"start": plan.service_h, "end": h}])).mark_rect(
             color=RED, opacity=0.13).encode(x="start:Q", x2="end:Q")
         layers.insert(0, gap)
-    top = alt.layer(*layers).properties(height=170,
+    top = alt.layer(*layers).properties(height=185 if projector else 170,
         description="Synthetic brightness plan. Dashed lines show minimum and desired brightness. Red shading is unmet service.")
     points = sorted(set([0.0, h, plan.service_h] + [h * i / 48 for i in range(49)]))
     battery = alt.Chart(alt.Data(values=[{"hour": t, "energy": plan.remaining_at(t)} for t in points]))
@@ -54,12 +54,12 @@ def energy_charts(plan: EnergyPlan):
         tooltip=[alt.Tooltip("hour:Q", format=".2f", title="Hour"), alt.Tooltip("energy:Q", format=".1f", title="Remaining (Wh)")])
     reserve = alt.Chart(alt.Data(values=[{"reserve": plan.reserve_wh, "label": "Held reserve"}])).mark_rule(
         color=GOLD, strokeDash=[6, 5]).encode(y="reserve:Q", tooltip=["label:N", alt.Tooltip("reserve:Q", title="Wh")])
-    bottom = (area + trace + reserve).properties(height=170,
+    bottom = (area + trace + reserve).properties(height=185 if projector else 170,
         description="Synthetic remaining battery energy. The dashed amber line is the unspent planning reserve.")
-    return style(top), style(bottom)
+    return style(top, projector), style(bottom, projector)
 
 
-def event_timeline(observation: int, cutoff: int, receipt: int):
+def event_timeline(observation: int, cutoff: int, receipt: int, *, projector=False):
     rows = [
         {"minute": observation, "event": "Observation", "time": clock(observation)},
         {"minute": cutoff, "event": "Forecast issued", "time": clock(cutoff)},
@@ -78,6 +78,6 @@ def event_timeline(observation: int, cutoff: int, receipt: int):
     markers = base.mark_point(filled=True, size=220).encode(
         shape=alt.Shape("event:N", scale=alt.Scale(domain=order, range=["circle", "diamond", "square"]), legend=None),
         tooltip=["event:N", "time:N"])
-    labels = base.mark_text(dy=-23, fontSize=16, fontWeight="bold").encode(text="time:N")
-    return style((cutoff_line + markers + labels).properties(height=235,
-        description="Synthetic observation, forecast cutoff and receipt times, shown on separate rows to keep coincident timestamps legible."))
+    labels = base.mark_text(dy=-23, fontSize=21 if projector else 16, fontWeight="bold").encode(text="time:N")
+    return style((cutoff_line + markers + labels).properties(height=250 if projector else 235,
+        description="Synthetic observation, forecast cutoff and receipt times, shown on separate rows to keep coincident timestamps legible."), projector)

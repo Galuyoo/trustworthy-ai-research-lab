@@ -148,3 +148,33 @@ test('Normal speed progresses through six complete nights in 66 seconds of stage
   assert.equal(sim.run(), null);
   assert.equal(sim.view().cutoff, 12);
 });
+
+test('Start paused holds Observe, advances only on command, and can resume', () => {
+  const sim = simulator();
+  sim.beginPlay(true);
+  sim.tick(0);
+  sim.tick(10000);
+  assert.equal(sim.run().stage, 0);
+  assert.equal(sim.run().paused, true);
+  assert.equal(sim.view().cutoff, 0);
+  assert.equal(sim.view().forecast, null);
+
+  for (const [stage, cutoff] of [[1, 0], [2, 0], [3, 1], [4, 2], [0, 2]]) {
+    sim.nextStage();
+    sim.tick(20000);
+    assert.equal(sim.run().stage, stage);
+    assert.equal(sim.run().paused, true);
+    assert.equal(sim.view().cutoff, cutoff);
+    if (stage < 3) assert.equal(sim.run().round.outcomes, undefined);
+  }
+  assert.equal(sim.run().night, 1);
+  assert.equal(sim.run().round.starts.adaptive, 81);
+
+  sim.togglePause();
+  sim.tick(30000);
+  sim.tick(32500);
+  assert.equal(sim.run().stage, 1);
+  sim.scenarioChanged();
+  assert.equal(sim.run(), null);
+  assert.equal(sim.view().forecast, null);
+});

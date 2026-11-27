@@ -84,3 +84,24 @@ def test_navigation_loads_only_the_selected_demo_and_preserves_energy_state():
     assert at.slider(key="reserve").value == 15
     assert not at.get("iframe")
     assert not at.exception
+
+
+def test_projector_and_next_experiment_preserve_settings():
+    at = app()
+    at.toggle(key="lab1_projector").set_value(True).run()
+    at.slider(key="receipt").set_value(time(20, 10)).run()
+    assert any("font-size:clamp(.9rem,1.45vw,1.15rem)" in h.proto.body for h in at.get("html"))
+    next(b for b in at.button if b.label == "Next: battery energy").click().run()
+    assert at.segmented_control(key="prediction_part").value == ENERGY
+    assert at.toggle(key="lab1_projector").value
+    assert at.slider(key="energy").value == 480
+    at.slider(key="reserve").set_value(15).run()
+    next(b for b in at.button if b.label == "Next: Lab 2").click().run()
+    assert at.segmented_control(key="lab").value == DECISIONS
+    assert at.get("iframe")
+    at.segmented_control(key="lab").set_value(LAB1).run()
+    assert at.slider(key="reserve").value == 15
+    assert at.toggle(key="lab1_projector").value
+    select(at, EVIDENCE)
+    assert at.slider(key="receipt").value == time(20, 10)
+    assert not at.exception
