@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Battery charge over time</title>
 <style>
-:root{color-scheme:light;--ink:#252134;--muted:#60596c;--line:#d9d2e2;--accent:#56328a;--paper:#f6f2fa;--white:#fff}
+:root{color-scheme:light;--ink:#010f4e;--muted:#485574;--line:#ccd9e9;--accent:#010f4e;--paper:#eef7fc;--white:#fff}
 *{box-sizing:border-box}
 body{margin:0;background:var(--white);color:var(--ink);font:15px/1.45 system-ui,sans-serif}
 main{max-width:1200px;margin:auto;padding:clamp(14px,2vw,24px) clamp(14px,3vw,34px)}
@@ -28,7 +28,7 @@ button:disabled{opacity:.55;cursor:default}
 .legend-button[aria-pressed=false]{opacity:.62;text-decoration:line-through}
 .legend-line{width:16px;height:3px;border-radius:6px}
 .chart-tooltip{position:absolute;display:none;pointer-events:none;background:var(--white);border:1px solid var(--line);padding:7px 10px;border-radius:5px;font-size:.8rem;z-index:1}
-.controls{margin:18px 0 0;padding:16px clamp(12px,2.5vw,24px);background:var(--paper);border-top:2px solid var(--accent)}
+.controls{margin:18px 0 0;padding:16px clamp(12px,2.5vw,24px);background:var(--paper);border-top:3px solid #00adef}
 .control-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px}
 .control-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 18px}
 .slider-field{min-width:0}
@@ -39,7 +39,15 @@ input[type=range]{width:100%;display:block;min-height:23px;margin:4px 0 0;accent
 #targetNumber{width:49px;padding:1px 2px;border:1px solid var(--line);border-radius:3px;background:var(--white)}
 .toolbar{margin:10px 0 0}
 #playBtn,.preset[aria-pressed=true]{background:var(--accent);color:var(--white);border-color:var(--accent)}
-.playback-status{min-height:2.8em;margin:8px 0 0;font-size:.85rem;color:var(--muted)}
+.playback{margin:10px 0 0}
+.playback[hidden]{display:none}
+.playback-heading{font-size:.85rem;margin-bottom:4px}
+.steps{display:flex;flex-wrap:wrap;gap:5px;margin:0;padding:0;list-style:none}
+.steps li{padding:4px 8px;border:1px solid var(--line);border-radius:4px;font-size:.83rem;text-align:center}
+.steps li.is-complete{background:#deeff9}
+.steps li[aria-current=step]{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:750}
+.playback-status{margin:7px 0 0;min-height:3em;font-size:.95rem;color:var(--ink)}
+@media(max-width:650px){.playback-status{min-height:5em}}
 details{padding-top:7px;font-size:.87rem}
 summary{width:fit-content;text-decoration:underline;text-underline-offset:3px}
 details[open] summary{margin-bottom:8px}
@@ -96,7 +104,13 @@ details[open] summary{margin-bottom:8px}
    <button type="button" id="resetBtn">Reset example</button>
    <button type="button" id="presentBtn" aria-pressed="false">Projector view</button>
   </div>
-  <p class="playback-status" id="playbackStatus" role="status"></p>
+  <div class="playback" id="playback" hidden>
+   <p class="playback-heading" id="nightCounter"></p>
+   <ol class="steps" aria-label="Playback steps">
+    <li>1. Observe</li><li>2. Forecast</li><li>3. Choose plan</li><li>4. Night discharge</li><li>5. Day recharge</li>
+   </ol>
+   <p class="playback-status" id="playbackStatus" role="status"></p>
+  </div>
   <details>
    <summary>Advanced settings</summary>
    <div class="control-grid">
@@ -121,7 +135,7 @@ details[open] summary{margin-bottom:8px}
 <script>
 (()=>{'use strict';
 const $=(s)=>document.querySelector(s);
-const colors={conservative:'#525e72',normal:'#8e6409',bold:'#a44265',adaptive:'#6433a6'};
+const colors={conservative:'#64748b',normal:'#926200',bold:'#b90057',adaptive:'#0076a8'};
 const labels={conservative:'Low fixed',normal:'Standard fixed',bold:'High fixed',adaptive:'Adaptive'};
 const definitions={initial:68,reserve:20,nights:6,conservative:7,normal:19,bold:31,target:70,minLoss:7,maxLoss:32,guard:4,haircut:0,gains:[45,10,38,8,34,16],preset:'mixed'};
 let state=JSON.parse(JSON.stringify(definitions));
@@ -240,18 +254,18 @@ function renderChart(allResults){
  let content=`<defs><clipPath id="socClip"><rect x="${l}" y="${t}" width="${pw}" height="${ph}"/></clipPath></defs>`;
  for(let y=0;y<=100;y+=20){
   const yy=toY(y);
-  content+=`<line x1="${l}" y1="${yy}" x2="${l+pw}" y2="${yy}" stroke="#e5dfeb"/><text x="${l-7}" y="${yy+4}" font-size="11" text-anchor="end" fill="#60596c">${y}%</text>`;
+  content+=`<line x1="${l}" y1="${yy}" x2="${l+pw}" y2="${yy}" stroke="#e3e9f1"/><text x="${l-7}" y="${yy+4}" font-size="11" text-anchor="end" fill="#485574">${y}%</text>`;
  }
  for(let i=0;i<n;i++){
   const start=toX(i*2),mid=toX(i*2+1),end=toX(i*2+2);
   const night=w<560?'N':'Night ',day=w<560?'D':'Day ';
-  content+=`<line x1="${start}" x2="${start}" y1="${t}" y2="${t+ph+4}" stroke="#e5dfeb"/><text x="${(start+mid)/2}" y="${t+ph+19}" font-size="11" fill="#60596c" text-anchor="middle">${night}${i+1}</text><text x="${(mid+end)/2}" y="${t+ph+19}" font-size="11" fill="#60596c" text-anchor="middle">${day}${i+1}</text>`;
+  content+=`<line x1="${start}" x2="${start}" y1="${t}" y2="${t+ph+4}" stroke="#e3e9f1"/><text x="${(start+mid)/2}" y="${t+ph+19}" font-size="11" fill="#485574" text-anchor="middle">${night}${i+1}</text><text x="${(mid+end)/2}" y="${t+ph+19}" font-size="11" fill="#485574" text-anchor="middle">${day}${i+1}</text>`;
  }
- for(const [label,value,color] of [['Target',state.target,'#72578e'],['Reserve',state.reserve,'#a34758']]){
+ for(const [label,value,color] of [['Target',state.target,'#446a94'],['Reserve',state.reserve,'#b90057']]){
   const y=toY(value);
   content+=`<line x1="${l}" x2="${l+pw}" y1="${y}" y2="${y}" stroke="${color}" stroke-dasharray="2 5"/><text x="${l+pw-2}" y="${y-5}" font-size="11" text-anchor="end" fill="${color}" stroke="#fff" stroke-width="3" paint-order="stroke">${label} ${value}%</text>`;
  }
- content+=`<circle cx="${l}" cy="${toY(state.initial)}" r="3" fill="#252134"/>`;
+ content+=`<circle cx="${l}" cy="${toY(state.initial)}" r="3" fill="#010f4e"/>`;
  const toPath = points => points.map((point, i) =>
    (i === 0 ? 'M' : 'L') + toX(point.x).toFixed(1) + ' ' + toY(point.y).toFixed(1)).join(' ');
  if (forecast && visible.adaptive) {
@@ -264,7 +278,7 @@ function renderChart(allResults){
   content+=`<path data-series="${key}" data-through="${res.points.at(-1).x}" clip-path="url(#socClip)" d="${toPath(res.points)}" fill="none" stroke="${colors[key]}" stroke-width="${key==='adaptive'?3.6:2.6}" stroke-linecap="round" stroke-linejoin="round" opacity="${key==='conservative'?'.9':'1'}"/>`;
  }
  // crosshair and user pointer targets on every checkpoint; do not alter data
- content+=`<g id="crosshair" style="display:none"><line id="crossX" x1="0" x2="0" y1="${t}" y2="${t+ph}" stroke="#4f7284" stroke-width="1.2" stroke-dasharray="3 4"/></g>`;
+ content+=`<g id="crosshair" style="display:none"><line id="crossX" x1="0" x2="0" y1="${t}" y2="${t+ph}" stroke="#50678a" stroke-width="1.2" stroke-dasharray="3 4"/></g>`;
  content+=`<rect id="chartHit" x="${l}" y="${t}" width="${pw}" height="${ph}" fill="transparent" style="cursor:crosshair"/>`;
  svg.innerHTML=content;
  const tip=$('#tooltip'),hit=$('#chartHit'),cross=$('#crosshair'),crossX=$('#crossX');
@@ -314,7 +328,7 @@ function reset(){
  updatePresetButtons();
  scenarioChanged();
 }
-const stages = ['Observe', 'Predict', 'Decide', 'Night', 'Day'];
+const stepItems = [...document.querySelectorAll('.steps li')];
 const durations = [2000, 2000, 3000, 2000, 2000];
 const strategyKeys = Object.keys(labels);
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -325,10 +339,6 @@ let finished = false;
 
 function displaySoc(value) {
   return Number.isFinite(value) ? fmt(value) + '%' : '—';
-}
-
-function signed(value) {
-  return (value >= 0 ? '+' : '−') + pp(Math.abs(value));
 }
 
 function observe() {
@@ -413,26 +423,43 @@ function renderDecision() {
  const outcome = round?.outcomes?.adaptive;
  const progress = motionProgress();
  const status = $('#playbackStatus');
- let message = finished ? 'Playback complete.' : '';
+ let message = finished ? 'All nights complete.' : '';
  if (stage === 0) {
-  message = `Start ${displaySoc(round.starts.adaptive)} · Expected recharge ${signed(round.expected)} · Reserve ${state.reserve}%`;
+  message = `Battery starts at ${displaySoc(round.starts.adaptive)}. The next day is expected to add ${pp(round.expected)}. Reserve: ${state.reserve}%.`;
  } else if (stage === 1) {
-  message = `Standard fixed plan (${pp(state.normal)} loss) · Forecast dawn ${displaySoc(forecast.dawn)}, dusk ${displaySoc(forecast.dusk)}`;
+  message = `The standard plan uses ${pp(state.normal)} overnight. Forecast: ${displaySoc(forecast.dawn)} at dawn and ${displaySoc(forecast.dusk)} at dusk.`;
  } else if (stage === 2) {
-  const reason = round.choice.conflict ? 'Minimum service conflicts with the reserve' : round.choice.reason;
-  message = `Adaptive plan (${pp(round.choice.loss)} loss) · Forecast dawn ${displaySoc(forecast.dawn)}, dusk ${displaySoc(forecast.dusk)}. ${reason}. ${targetText(forecast.dusk)} in forecast.`;
+  const reason = round.choice.conflict ? 'Minimum lighting would use the reserve or its buffer.' : {
+   'Maximum loss limits spending': 'The nightly loss cap limits how much the plan can use.',
+   'Minimum lighting service limits further savings': 'The minimum lighting requirement limits how much the plan can save.',
+   'Reserve buffer limits spending': 'The reserve buffer limits how much the plan can use.'
+  }[round.choice.reason] ?? 'The plan uses expected recharge to aim for the next-night target.';
+  const comparison = targetText(forecast.dusk).toLowerCase();
+  message = `The adaptive plan allows ${pp(round.choice.loss)} overnight. Forecast: ${displaySoc(forecast.dawn)} at dawn and ${displaySoc(forecast.dusk)} at dusk (${comparison}). ${reason}`;
  } else if (stage === 3) {
-  message = `Forecast dawn ${displaySoc(forecast.dawn)}`;
+  message = `Battery charge falls overnight. Forecast at dawn: ${displaySoc(forecast.dawn)}.`;
   if (progress === 1) {
-   message += ` · Simulated dawn ${displaySoc(outcome.dawn)}`;
-   if (outcome.dawn < state.reserve - 0.0001) message += ' · Below reserve';
+   message = `Dawn charge: ${displaySoc(outcome.dawn)} simulated, ${displaySoc(forecast.dawn)} forecast.`;
+   if (outcome.dawn < state.reserve - 0.0001) message += ` Charge is below the ${state.reserve}% reserve.`;
   }
  } else if (stage === 4) {
-  message = `Forecast dusk ${displaySoc(forecast.dusk)}`;
-  if (progress === 1) message += ` · Simulated dusk ${displaySoc(outcome.dusk)} · ${targetText(outcome.dusk)}`;
+  message = `Daylight adds up to ${pp(outcome.gain)}. Forecast at dusk: ${displaySoc(forecast.dusk)}.`;
+  if (progress === 1) {
+   message = `Dusk charge: ${displaySoc(outcome.dusk)} simulated, ${displaySoc(forecast.dusk)} forecast. ${targetText(outcome.dusk)}. This is the next night's starting charge.`;
+  }
  }
- const text = rolling ? `Night ${rolling.night + 1} of ${state.nights} · ${stages[stage]} · ${message}` : message;
- if (status.textContent !== text) status.textContent = text;
+ const counter = rolling ? `Night ${rolling.night + 1} of ${state.nights}` : '';
+ if ($('#nightCounter').textContent !== counter) $('#nightCounter').textContent = counter;
+ $('#playback').hidden = !rolling && !finished;
+ stepItems.forEach((item, index) => {
+  item.classList.toggle('is-complete', finished || index < stage);
+  if (index === stage) {
+   if (item.getAttribute('aria-current') !== 'step') item.setAttribute('aria-current', 'step');
+  } else if (item.hasAttribute('aria-current')) {
+   item.removeAttribute('aria-current');
+  }
+ });
+ if (status.textContent !== message) status.textContent = message;
  $('#pauseBtn').disabled = !rolling;
  $('#pauseBtn').textContent = rolling?.paused ? 'Resume' : 'Pause';
  $('#nextBtn').disabled = !rolling;
@@ -450,7 +477,7 @@ function stopFrame() {
 }
 
 function advanceStage() {
-  if (rolling.stage === stages.length - 1) {
+  if (rolling.stage === durations.length - 1) {
     for (const key of strategyKeys) rolling.history[key].push(rolling.round.outcomes[key]);
     if (++rolling.night === state.nights) {
       finished = true;

@@ -28,9 +28,9 @@ def test_launch_presets_and_reset():
         assert not at.exception
         assert at.slider(key="energy").value == expected_energy
         if preset == "Impossible":
-            assert any("Service failure is explicit" in e.value for e in at.error)
+            assert any("Minimum brightness exceeds starting energy." in h.proto.body for h in at.get("html"))
     at.slider(key="energy").set_value(0).run()
-    next(b for b in at.button if b.label == "↺ Reset light").click().run()
+    next(b for b in at.button if b.label == "Reset light").click().run()
     assert at.slider(key="energy").value == 480
     assert at.slider(key="reserve").value == 10
 
@@ -38,11 +38,11 @@ def test_launch_presets_and_reset():
 def test_live_timestamp_boundaries_reset_and_synthetic_reconstruction():
     at = select(app(), EVIDENCE)
     at.toggle(key="reveal").set_value(True).run()
-    assert any("rules disagree" in e.value for e in at.error)
+    assert any("Unavailable at the cutoff." in h.proto.body for h in at.get("html"))
     at.slider(key="receipt").set_value(time(20,10)).run()
-    assert any("both timestamps pass" in s.value for s in at.success)
+    assert any("Both times pass the cutoff." in h.proto.body for h in at.get("html"))
     at.slider(key="cutoff").set_value(time(20,0)).run()
-    assert any("rules disagree" in e.value for e in at.error)
+    assert any("Unavailable at the cutoff." in h.proto.body for h in at.get("html"))
     at.slider(key="observation").set_value(time(20,30)).run()
     assert any("inconsistent" in w.value for w in at.warning)
     at.toggle(key="later").set_value(True).run()
@@ -52,7 +52,7 @@ def test_live_timestamp_boundaries_reset_and_synthetic_reconstruction():
     select(at, EVIDENCE)
     assert at.toggle(key="later").value
     assert all(exp.label != "Optional · findings from the historical audits" for exp in at.expander)
-    next(b for b in at.button if b.label == "↺ Reset evidence").click().run()
+    next(b for b in at.button if b.label == "Reset evidence").click().run()
     assert at.slider(key="observation").value == time(20,0)
     assert at.slider(key="receipt").value == time(20,20)
     assert not at.toggle(key="later").value
