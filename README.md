@@ -1,16 +1,15 @@
-# Trustworthy AI Lab
+# Reliable AI Lab
 
-Three interactive demonstrations for **From Engineering to Trustworthy AI: What Real Systems Taught Me** — Salaheddine Chouikh, invited BCU guest presentation, 30 November 2026.
+Two presenter-led labs for **From Engineering to Trustworthy AI: What Real Systems Taught Me** — Salaheddine Chouikh, invited BCU guest presentation, 30 November 2026.
 
 A lightweight Streamlit teaching app. No sign-in in the app, database, external API, live telemetry, training, or research infrastructure is required. Dependencies are Streamlit and Altair; all calculations are deterministic and use tiny in-memory examples.
 
-## Try the demonstrations
+## Follow the two labs
 
-Open the [public Trustworthy AI Lab](https://trustworthy-ai-lab.streamlit.app/) or run it locally below. The navigation renders only the selected demonstration.
+Open the [public Reliable AI Lab](https://trustworthy-ai-lab.streamlit.app/). The app renders the selected lab and, in Lab 1, the selected part.
 
-- **DIME Autonomy Simulator.** Compare four simulated solar-streetlight lighting strategies under Mixed, Cloudy and Sunny recharge. Choose **Run nights** to follow Observe, Predict, Decide, Night and Day. Pause and use **Next stage** to step through it, or let it run automatically. The standalone file in `assets/` runs locally in the browser. Its assumed state-of-charge values are illustrative and do not represent field performance or physical control.
-- **Can You Save the Light?** Adjust energy, night length, the lighting floor and a planning reserve. See the brightness plan, remaining energy, and explicit unmet service. Try Comfortable, Close call and Impossible.
-- **Catch the Data Leakage.** Move observation, forecast and receipt times, then reveal eligibility. Compare an invented frozen input with a later reconstruction, separately from fixed historical audit aggregates.
+1. **From Data to Reliable Predictions.** Start with the synthetic information-availability timeline. Then open the synthetic energy feasibility exercise inspired by the published SETA battery-runtime study. The timeline concerns a separate investigation.
+2. **From Predictions to Decisions.** Use the standalone DIME simulator embedded in the app. Compare rolling forecasts, simulated outcomes and four lighting strategies under Mixed, Cloudy and Sunny recharge. Data and decisions are illustrative and have no connection to physical control.
 
 ## Run locally (Python 3.12)
 

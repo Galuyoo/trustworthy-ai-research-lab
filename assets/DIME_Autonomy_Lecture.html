@@ -96,6 +96,20 @@ body.presentation .topbar{padding-top:8px;padding-bottom:8px}
  .decision-explanation{grid-template-columns:1fr;gap:1px;align-content:center;height:101px;font-size:12px}
  .graph-panel{padding:8px}
 }
+
+/* Lecture theme. The rolling policy, timing and chart data are shared with the previous lecture build. */
+:root{--bg:#fff;--ink:#102b39;--shadow:0 2px 10px #102b3909}
+.topbar{background:#fff;color:var(--ink);box-shadow:none;border-bottom:3px solid #087c83}
+.brand p,.brand h1{color:var(--ink)}
+.logo{background:#ecf7f5;border-color:#93c8c5;color:#087c83}
+.top-actions .button{background:#fff;color:#163e4b;border-color:#c8dce0}
+.top-actions .button:hover{background:#edf7f5}
+.top-actions #playBtn{background:#087c83;color:#fff;border-color:#087c83}
+.kpi{background:#fff;border-color:#c7e3e1;border-top:3px solid #238c88}
+.kpi strong{color:#102b39}
+.decision-explanation{background:#edf7f5;color:#102b39;border-left:4px solid #087c83}
+.decision-explanation strong{color:#076565}
+.main.rolling .trio,.main.rolling .detail-panel{visibility:hidden}
 </style>
 </head>
 <body>
@@ -512,6 +526,7 @@ function setText(id, value) {
 }
 
 function renderDecision() {
+  $('.main').classList.toggle('rolling', Boolean(rolling));
   const stage = rolling?.stage ?? -1;
   const round = rolling?.round;
   const forecast = round?.prediction ?? round?.candidate;

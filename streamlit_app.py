@@ -1,4 +1,4 @@
-"""Trustworthy AI Lab — a synthetic, offline-capable teaching app."""
+"""Reliable AI Lab — a synthetic, offline-capable teaching app."""
 from datetime import time, timedelta
 from base64 import b64encode
 from pathlib import Path
@@ -6,7 +6,7 @@ import streamlit as st
 from lab_models import AUDIT, PRESETS, Scenario, clock, eligible, plan_energy, reconstruction_example
 from lab_charts import energy_charts, event_timeline
 
-st.set_page_config(page_title="Trustworthy AI Lab · Salaheddine Chouikh", page_icon="💡", layout="wide")
+st.set_page_config(page_title="Reliable AI Lab · Salaheddine Chouikh", page_icon="💡", layout="wide")
 
 st.html("""<style>
 .stApp {font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;}
@@ -50,9 +50,9 @@ if "observation" not in st.session_state:
     reset_evidence()
 
 st.html("""<div class="hero"><div class="eyebrow">Birmingham City University · 30 November 2026 · Interactive research</div>
-<h1>Trustworthy AI Lab<span style="color:#087f8c">.</span></h1>
+<h1>Reliable AI Lab<span style="color:#087f8c">.</span></h1>
 <p><strong>From Engineering to Trustworthy AI: What Real Systems Taught Me</strong></p>
-<p class="muted">Salaheddine Chouikh &nbsp;·&nbsp; Three demonstrations for the BCU guest lecture</p></div>""")
+<p class="muted">Salaheddine Chouikh &nbsp;·&nbsp; Two presenter-led labs for the BCU guest lecture</p></div>""")
 app_dir = Path(__file__).resolve().parent
 source_file = app_dir / "SOURCE_URL.txt"
 links = "[GitHub ↗](https://github.com/Galuyoo) &nbsp; · &nbsp; " \
@@ -60,100 +60,33 @@ links = "[GitHub ↗](https://github.com/Galuyoo) &nbsp; · &nbsp; " \
         "[Research code ↗](https://github.com/Galuyoo/offgrid-streetlight-dimming-control)"
 if source_file.exists():
     links += f" &nbsp; · &nbsp; [Demo source ↗]({source_file.read_text().strip()})"
-st.caption("Compare streetlight strategies, test a battery energy limit, then check "
-           "when a forecast could use a reading. All interactive examples are synthetic.")
+st.caption("Follow the evidence available at forecast time, then see how energy limits shape an engineering decision.")
 
-DIME, ENERGY, EVIDENCE = (
-    "DIME Autonomy Simulator",
-    "Can You Save the Light?",
-    "Catch the Data Leakage",
-)
-active = st.segmented_control("Choose a demonstration", (DIME, ENERGY, EVIDENCE),
-                              default=DIME, required=True, wrap=True,
-                              key="experiment", label_visibility="collapsed")
+PREDICTIONS = "01 — From Data to Reliable Predictions"
+DECISIONS = "02 — From Predictions to Decisions"
+EVIDENCE = "1. Information availability"
+ENERGY = "2. Battery energy feasibility"
 
-if active == DIME:
+lab = st.segmented_control("Choose a lab", (PREDICTIONS, DECISIONS),
+                           default=PREDICTIONS, required=True, wrap=True,
+                           key="lab", label_visibility="collapsed")
+part = None
+if lab == PREDICTIONS:
+    part = st.segmented_control("Choose a part of Lab 1", (EVIDENCE, ENERGY),
+                               default=EVIDENCE, required=True, wrap=True,
+                               key="prediction_part", persist_state="page")
+    if part == ENERGY:
+        st.caption("Once we know which inputs are available, we can ask what the battery can physically deliver.")
+    else:
+        st.caption("Start with the timestamp of a sensor reading and the moment it became available.")
+
+if lab == DECISIONS:
     st.iframe(app_dir / "assets" / "DIME_Autonomy_Lecture.html",
               alt="Interactive solar streetlight battery and lighting simulator")
 
-elif active == ENERGY:
-    st.html('<span class="badge">Synthetic educational simulation</span>')
-    st.subheader("Can you keep this light on until dawn?")
-    st.write("Start with a scenario. Then change the energy or reserve and watch the night change.")
-    buttons = st.columns([1, 1, 1, 1])
-    for column, name in zip(buttons, PRESETS):
-        column.button(name, on_click=set_energy, args=(name,), width="stretch")
-    buttons[3].button("↺ Reset light", on_click=set_energy, type="primary", width="stretch")
-
-    controls, visual = st.columns([1, 1.8], gap="large")
-    with controls:
-        st.slider("Available battery energy (Wh)", 0, 600, step=5, key="energy", persist_state="page")
-        st.slider("Night duration (hours)", 4, 16, key="night", persist_state="page")
-        st.slider("Minimum required brightness (%)", 10, 100, step=5, key="minimum", persist_state="page")
-        st.slider("Conservative planning reserve (%)", 0, 40, step=1, key="reserve", persist_state="page",
-                  help="Hold back this share of starting energy. This is a planning choice, not a calibrated uncertainty probability.")
-        st.checkbox("Aim for 80% brightness if energy allows", key="extra", persist_state="page")
-        scenario = Scenario(st.session_state.energy, st.session_state.night,
-                            st.session_state.minimum, st.session_state.reserve)
-        plan = plan_energy(scenario, 80 if st.session_state.extra else scenario.minimum_pct)
-        st.caption(f"Required floor: **{scenario.minimum_pct:.0f}%** all night. "
-                   f"Desired target: **{plan.desired_pct:.0f}%**. Extra brightness is optional.")
-        st.caption("Toy lamp: 40 W at 100% brightness. No overnight charging. Night begins at hour 0.")
-
-    with visual:
-        if plan.feasible:
-            kind, title = "", "The minimum service is feasible"
-            message = (f"{plan.brightness_pct:.1f}% brightness for all {scenario.night_h:.0f} hours. "
-                       f"The plan keeps {plan.reserve_wh:.0f} Wh in reserve.")
-        elif plan.physically_feasible:
-            kind, title = "warn", "The reserve makes this plan infeasible"
-            message = (f"The minimum could fit without this reserve. With it, {plan.unmet_h:.2f} hours "
-                       f"are unserved: a {plan.planning_gap_wh:.0f} Wh planning shortfall.")
-        else:
-            kind, title = "bad", "Not enough energy—even at the minimum"
-            message = (f"Even with no reserve, the floor needs {plan.physical_gap_wh:.0f} Wh more. "
-                       f"This reserve-aware plan leaves {plan.unmet_h:.2f} hours unserved.")
-        st.html(f'<div class="status {kind}"><h3>{title}</h3><p>{message}</p></div>')
-        lamp_svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 120">
-        <circle cx="85" cy="20" r="10" fill="#f2e5ab"/><circle cx="90" cy="16" r="10" fill="#132d43"/>
-        <path d="M14 15h31l-5 12H10Z" fill="#487792" stroke="#a8c4d5"/><path d="M27 27v77M27 40h33" stroke="#bed3dc" stroke-width="4"/>
-        <path d="M50 42h20l20 58H31Z" fill="#f7d873" opacity="{0.06 + plan.brightness_pct / 400:.3f}"/>
-        <rect x="49" y="37" width="24" height="7" rx="3" fill="#ffe6a0"/><path d="M8 105h92" stroke="#78939e"/>
-        <rect x="18" y="76" width="18" height="17" rx="3" fill="#87c3b9"/></svg>'''
-        lamp_src = "data:image/svg+xml;base64," + b64encode(lamp_svg.encode()).decode()
-        st.html(f'''<div class="lamp-scene"><img src="{lamp_src}" width="110" height="120"
-        alt="Synthetic illustration of a solar streetlight at night"/>
-        <div><strong>{plan.service_h:.2f} / {scenario.night_h:.0f} hours</strong><p>Simulated service at or above the floor</p>
-        <p>Nightfall → {'Dawn' if plan.feasible else 'Budget exhausted → unserved night'}</p></div></div>''')
-        metrics = st.columns(3)
-        metrics[0].metric("Minimum needs", f"{plan.floor_wh:.0f} Wh")
-        metrics[1].metric("Usable after reserve", f"{plan.budget_wh:.0f} Wh")
-        metrics[2].metric("Planning margin", f"{plan.budget_wh - plan.floor_wh:+.0f} Wh")
-        brightness_chart, battery_chart = energy_charts(plan)
-        st.altair_chart(brightness_chart, width="stretch", theme=None)
-        st.altair_chart(battery_chart, width="stretch", theme=None)
-        st.caption(f"Synthetic plan · {plan.consumed_wh:.1f} Wh used + {plan.remaining_wh:.1f} Wh left = "
-                   f"{scenario.energy_wh:.1f} Wh initially. Amber dashed energy line = held reserve.")
-        if not plan.feasible:
-            st.error(f"Service failure is explicit: the lamp switches off after {plan.service_h:.2f} hours. "
-                     "The red interval fails the required minimum; it is not a valid all-night lighting plan.")
-    st.html('<div class="takeaway"><strong>The lesson:</strong> A better prediction cannot create missing energy. '
-            'A trustworthy system must recognise when the required service is infeasible.</div>')
-    with st.expander("How this simulation works · assumptions & research limits"):
-        st.markdown("**Minimum energy (Wh) = 40 W × minimum brightness / 100 × night hours.**\n\n"
-                    "Usable energy = starting energy × (1 − reserve / 100). If that covers the minimum, "
-                    "we allocate constant brightness up to the desired target. Otherwise, we deliver the floor "
-                    "until usable energy runs out and explicitly mark the remaining time as unserved. "
-                    "The reserve stays in the battery.\n\n"
-                    "Linear power versus brightness, perfect conversion and no charging, standby load, "
-                    "temperature, ageing or stochastic error are assumed. The reserve is not a confidence level.\n\n"
-                    "**Inspired by the published SETA research; not a reproduction.** The original paper used "
-                    "NASA laboratory battery discharge data and simulation-based evaluation, with its own "
-                    "experimental horizons. These invented night lengths and energy values are not published "
-                    "numerical results, a field-validated controller, or measured real-world energy savings.")
-
-elif active == EVIDENCE:
+elif part == EVIDENCE:
     st.html('<span class="badge">Synthetic timeline · no industrial observations</span>')
+    st.caption("This synthetic example illustrates a separate investigation into information availability. The SETA paper studies battery runtime and dimming.")
     st.subheader("Could the model have used this observation?")
     st.write("The sensor says it happened before the forecast. But when did the system receive it?")
     a, b, c = st.columns(3)
@@ -233,20 +166,93 @@ elif active == EVIDENCE:
                    "They are not rates that generalise to all AI, all industrial sites or the whole fleet. "
                    "A1 is parser-conditioned; A2 is a limited retrospective subset covering only three nights.")
 
+    st.info("Next, use the battery energy feasibility part to see how a reliable forecast still has to respect an energy budget.")
+
+elif part == ENERGY:
+    st.html('<span class="badge">Synthetic educational simulation</span>')
+    st.caption("Educational energy model inspired by the published SETA battery-runtime and dimming study. The controls below use synthetic values.")
+    st.subheader("Can you keep this light on until dawn?")
+    st.write("Start with a scenario. Then change the energy or reserve and watch the night change.")
+    buttons = st.columns([1, 1, 1, 1])
+    for column, name in zip(buttons, PRESETS):
+        column.button(name, on_click=set_energy, args=(name,), width="stretch")
+    buttons[3].button("↺ Reset light", on_click=set_energy, type="primary", width="stretch")
+
+    controls, visual = st.columns([1, 1.8], gap="large")
+    with controls:
+        st.slider("Available battery energy (Wh)", 0, 600, step=5, key="energy", persist_state="page")
+        st.slider("Night duration (hours)", 4, 16, key="night", persist_state="page")
+        st.slider("Minimum required brightness (%)", 10, 100, step=5, key="minimum", persist_state="page")
+        st.slider("Conservative planning reserve (%)", 0, 40, step=1, key="reserve", persist_state="page",
+                  help="Hold back this share of starting energy. This is a planning choice, not a calibrated uncertainty probability.")
+        st.checkbox("Aim for 80% brightness if energy allows", key="extra", persist_state="page")
+        scenario = Scenario(st.session_state.energy, st.session_state.night,
+                            st.session_state.minimum, st.session_state.reserve)
+        plan = plan_energy(scenario, 80 if st.session_state.extra else scenario.minimum_pct)
+        st.caption(f"Required floor: **{scenario.minimum_pct:.0f}%** all night. "
+                   f"Desired target: **{plan.desired_pct:.0f}%**. Extra brightness is optional.")
+        st.caption("Toy lamp: 40 W at 100% brightness. No overnight charging. Night begins at hour 0.")
+
+    with visual:
+        if plan.feasible:
+            kind, title = "", "The minimum service is feasible"
+            message = (f"{plan.brightness_pct:.1f}% brightness for all {scenario.night_h:.0f} hours. "
+                       f"The plan keeps {plan.reserve_wh:.0f} Wh in reserve.")
+        elif plan.physically_feasible:
+            kind, title = "warn", "The reserve makes this plan infeasible"
+            message = (f"The minimum could fit without this reserve. With it, {plan.unmet_h:.2f} hours "
+                       f"are unserved: a {plan.planning_gap_wh:.0f} Wh planning shortfall.")
+        else:
+            kind, title = "bad", "Not enough energy—even at the minimum"
+            message = (f"Even with no reserve, the floor needs {plan.physical_gap_wh:.0f} Wh more. "
+                       f"This reserve-aware plan leaves {plan.unmet_h:.2f} hours unserved.")
+        st.html(f'<div class="status {kind}"><h3>{title}</h3><p>{message}</p></div>')
+        lamp_svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 120">
+        <circle cx="85" cy="20" r="10" fill="#f2e5ab"/><circle cx="90" cy="16" r="10" fill="#132d43"/>
+        <path d="M14 15h31l-5 12H10Z" fill="#487792" stroke="#a8c4d5"/><path d="M27 27v77M27 40h33" stroke="#bed3dc" stroke-width="4"/>
+        <path d="M50 42h20l20 58H31Z" fill="#f7d873" opacity="{0.06 + plan.brightness_pct / 400:.3f}"/>
+        <rect x="49" y="37" width="24" height="7" rx="3" fill="#ffe6a0"/><path d="M8 105h92" stroke="#78939e"/>
+        <rect x="18" y="76" width="18" height="17" rx="3" fill="#87c3b9"/></svg>'''
+        lamp_src = "data:image/svg+xml;base64," + b64encode(lamp_svg.encode()).decode()
+        st.html(f'''<div class="lamp-scene"><img src="{lamp_src}" width="110" height="120"
+        alt="Synthetic illustration of a solar streetlight at night"/>
+        <div><strong>{plan.service_h:.2f} / {scenario.night_h:.0f} hours</strong><p>Simulated service at or above the floor</p>
+        <p>Nightfall → {'Dawn' if plan.feasible else 'Budget exhausted → unserved night'}</p></div></div>''')
+        metrics = st.columns(3)
+        metrics[0].metric("Minimum needs", f"{plan.floor_wh:.0f} Wh")
+        metrics[1].metric("Usable after reserve", f"{plan.budget_wh:.0f} Wh")
+        metrics[2].metric("Planning margin", f"{plan.budget_wh - plan.floor_wh:+.0f} Wh")
+        brightness_chart, battery_chart = energy_charts(plan)
+        st.altair_chart(brightness_chart, width="stretch", theme=None)
+        st.altair_chart(battery_chart, width="stretch", theme=None)
+        st.caption(f"Synthetic plan · {plan.consumed_wh:.1f} Wh used + {plan.remaining_wh:.1f} Wh left = "
+                   f"{scenario.energy_wh:.1f} Wh initially. Amber dashed energy line = held reserve.")
+        if not plan.feasible:
+            st.error(f"Service failure is explicit: the lamp switches off after {plan.service_h:.2f} hours. "
+                     "The red interval fails the required minimum; it is not a valid all-night lighting plan.")
+    st.html('<div class="takeaway"><strong>The lesson:</strong> A better prediction cannot create missing energy. '
+            'A trustworthy system must recognise when the required service is infeasible.</div>')
+    with st.expander("How this simulation works · assumptions & research limits"):
+        st.markdown("**Minimum energy (Wh) = 40 W × minimum brightness / 100 × night hours.**\n\n"
+                    "Usable energy = starting energy × (1 − reserve / 100). If that covers the minimum, "
+                    "we allocate constant brightness up to the desired target. Otherwise, we deliver the floor "
+                    "until usable energy runs out and explicitly mark the remaining time as unserved. "
+                    "The reserve stays in the battery.\n\n"
+                    "Linear power versus brightness, perfect conversion and no charging, standby load, "
+                    "temperature, ageing or stochastic error are assumed. The reserve is not a confidence level.\n\n"
+                    "**Inspired by the published SETA research; not a reproduction.** The original paper used "
+                    "NASA laboratory battery discharge data and simulation-based evaluation, with its own "
+                    "experimental horizons. These invented night lengths and energy values are not published "
+                    "numerical results, a field-validated controller, or measured real-world energy savings.")
 
 st.divider()
 st.markdown(links, unsafe_allow_html=True)
 st.caption("SETA research by Salaheddine Chouikh, Nouh Elmitwally and Faisal Saeed. "
            "Independent educational application · synthetic exercises · no live infrastructure connection.")
 with st.expander("Presenter quick guide & offline backup"):
-    st.markdown("**DIME:** Open Projector view and Run nights on Mixed. Pause and use Next stage to discuss the candidate, adaptive forecast and simulated outcome. Compare Cloudy or Sunny, "
-                "then choose Reset example.\n\n"
-                "**Energy budget:** Start Comfortable. Ask if the light will last. Choose Close call; "
-                "raise reserve from 10% to 15%. Choose Impossible and try removing the reserve. "
-                "Show that the minimum itself needs more energy. Reset.\n\n"
-                "**Data leakage:** Open Catch the Data Leakage. Ask the audience before revealing the "
-                "20:00 / 20:10 / 20:20 verdict. Move receipt to 20:10; equality passes. "
-                "Open the optional reconstruction example if time allows.\n\n"
-                "**Offline:** Install the requirements and launch this app on your laptop before the event. "
-                "Once running locally, all three demonstrations work without internet. Keep the supplied screenshots "
-                "open as a second fallback; external paper and GitHub links require connectivity.")
+    st.markdown("**Lab 1:** Reveal the verdict for a late reading. Move receipt to the forecast "
+                "cutoff. Then open Battery energy feasibility, choose Close call and raise the reserve.\n\n"
+                "**Lab 2:** Open Projector view and Run nights on Mixed. Pause and use Next stage "
+                "to show the candidate, adaptive forecast and simulated outcome.\n\n"
+                "**Offline:** Install the dependencies and run the lab locally. The standalone DIME "
+                "HTML and the screenshots can also be opened directly.")

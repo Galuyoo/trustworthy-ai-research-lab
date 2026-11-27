@@ -5,13 +5,14 @@ from streamlit.testing.v1 import AppTest
 APP = str(Path(__file__).resolve().parents[1] / "streamlit_app.py")
 
 
-DIME = "DIME Autonomy Simulator"
-ENERGY = "Can You Save the Light?"
-EVIDENCE = "Catch the Data Leakage"
+LAB1 = "01 — From Data to Reliable Predictions"
+DIME = "02 — From Predictions to Decisions"
+ENERGY = "2. Battery energy feasibility"
+EVIDENCE = "1. Information availability"
 
 
 def select(at, name):
-    return at.segmented_control(key="experiment").set_value(name).run()
+    return at.segmented_control(key="prediction_part").set_value(name).run()
 
 
 def app():
@@ -66,20 +67,23 @@ def test_live_timestamp_boundaries_reset_and_fixed_counts():
 
 def test_navigation_loads_only_the_selected_demo_and_preserves_energy_state():
     at = app()
-    assert at.segmented_control(key="experiment").value == DIME
-    [iframe] = at.get("iframe")
-    original = Path(APP).parent / "assets" / "DIME_Autonomy_Lecture.html"
-    assert iframe.proto.srcdoc == original.read_text(encoding="utf-8")
-    assert not at.slider
+    assert at.segmented_control(key="lab").value == LAB1
+    assert at.segmented_control(key="prediction_part").value == EVIDENCE
+    assert not at.get("iframe")
+    assert {slider.key for slider in at.slider} == {"observation", "cutoff", "receipt"}
 
     select(at, ENERGY)
     assert not at.get("iframe")
     at.slider(key="reserve").set_value(15).run()
 
-    select(at, EVIDENCE)
-    assert not at.get("iframe")
-    assert {slider.key for slider in at.slider} == {"observation", "cutoff", "receipt"}
+    at.segmented_control(key="lab").set_value(DIME).run()
+    [iframe] = at.get("iframe")
+    original = Path(APP).parent / "assets" / "DIME_Autonomy_Lecture.html"
+    assert iframe.proto.srcdoc == original.read_text(encoding="utf-8")
+    assert not at.slider
 
-    select(at, ENERGY)
+    at.segmented_control(key="lab").set_value(LAB1).run()
+    assert at.segmented_control(key="prediction_part").value == ENERGY
     assert at.slider(key="reserve").value == 15
+    assert not at.get("iframe")
     assert not at.exception
